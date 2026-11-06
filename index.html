@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
   DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
-  Push these 8 files, byte for byte, replacing the old landing page's index.html:
-    index.html                        133,467 bytes (this file, manifest comment included)
+  Push these 10 files, byte for byte, replacing the old landing page's index.html:
+    index.html                        133,715 bytes (this file, manifest comment included)
     assets/earth_0_zhtn.glb        23,342,728 bytes
     assets/earth_clouds_4096.png    9,848,258 bytes
     assets/earth_day_color_4096.jpg 2,693,045 bytes
@@ -10,6 +10,8 @@
     assets/ladder-star.png             90,703 bytes
     assets/ladder-star-alpha.png       60,365 bytes
     assets/ladder-star-dark.png        60,366 bytes
+    assets/favicon-512.png             79,049 bytes (new 3D star favicon)
+    assets/apple-touch-icon.png        17,469 bytes (same 3D star, 180px)
   Every file is under GitHub's 25 MB web-upload limit; all references are
   relative (assets/...), so the page runs identically from the repo root.
   Do NOT touch CNAME or tracker.html in the repo.
@@ -20,7 +22,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="dark light" />
 <meta name="description" content="Ladder is the decentralized exchange on Elysium — Kinetiq's Arbitrum Orbit L2 for the Hyperliquid ecosystem. Swap, provide liquidity, launch tokens and climb, rung by rung." />
-<link rel="icon" type="image/png" href="assets/ladder-star.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
 <title>Ladder — The DEX on Elysium</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -154,10 +157,16 @@ section{position:relative}
 .ring.spin-rev{animation:spin 70s linear infinite reverse}
 @keyframes spin{to{transform:rotate(360deg)}}
 .sing-stars{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
-/* singularity body — the Earth globe (or, as a fallback, the Ladder star mark) */
+/* singularity body — the Earth globe (or, as a last-resort fallback, the
+   Ladder star mark). While the globe loads the hero stays dark: only the
+   black shadow disc, the rings and the starfield show. The star logo is
+   hidden from the first paint and only returns if the globe has failed
+   outright (the watchdog script adds .globe-failed after ~5 s with no
+   live globe), so a refresh never flashes the logo while Earth loads. */
 .sing-body{position:absolute;left:50%;top:46%;width:min(57vmin,540px);aspect-ratio:1;transform:translate(-50%,-50%);will-change:transform;pointer-events:none}
 .sing-shadow{position:absolute;left:50%;top:50%;width:64%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,#010101 66%,rgba(1,1,1,.9) 82%,rgba(1,1,1,0) 100%)}
-.sing-logo{position:absolute;left:50%;top:50%;width:57%;transform:translate(-50%,-50%);filter:drop-shadow(0 0 16px rgba(140,140,140,.45));animation:logofloat 7s ease-in-out infinite}
+.sing-logo{display:none;position:absolute;left:50%;top:50%;width:57%;transform:translate(-50%,-50%);filter:drop-shadow(0 0 16px rgba(140,140,140,.45));animation:logofloat 7s ease-in-out infinite}
+.sing-body.globe-failed .sing-logo{display:block}
 /* Earth globe — replaces the singularity core once its texture is drawn */
 .sing-globe{position:absolute;inset:0;pointer-events:auto;cursor:grab;touch-action:pan-y}
 .sing-globe.dragging{cursor:grabbing}
@@ -1385,6 +1394,24 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 </script>
 
 <script>
+/* ---------- Hero loading watchdog ----------
+   The hero star logo starts hidden (CSS: .sing-logo{display:none}) so a
+   refresh shows only the dark hero — shadow disc, rings, starfield —
+   until the Earth globe draws its first frame and adds .has-globe. If
+   no globe (2D or GLB) is live after ~5 s, the globe has failed
+   outright: reveal the star mark as the fallback so the hero is never
+   left an empty dark disc. If a globe comes live later, .has-globe
+   hides the logo again. */
+(function(){
+  setTimeout(function(){
+    if(window.__earth2DLive||window.__earth3DLive)return;
+    var body=document.querySelector('.sing-body');
+    if(body&&!body.classList.contains('has-globe'))body.classList.add('globe-failed');
+  },5000);
+})();
+</script>
+
+<script>
 /* ---------- Hero Earth — 2D canvas globe (first paint + safety net) ----------
    This renderer starts on its own, immediately: it is the hero's fast
    first paint AND the safety net for the GLB globe in the script
@@ -1412,7 +1439,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
    stay smooth; the maps rebuild only when the size changes or the
    drag-pitch moves. 'has-globe' (which hides the CSS singularity
    fallback) is added only after the first frame has actually been
-   drawn, so a slow or failed texture can never leave a bare disc. */
+   drawn. While it loads, the hero stays dark — the star logo stays
+   hidden — and only the watchdog above brings the logo back if no
+   globe is live after ~5 s. */
 window.__startEarth2D=function(){
   "use strict";
   if(window.__earth2DStarted)return;
@@ -1467,7 +1496,7 @@ window.__startEarth2D=function(){
        size, so both pixel arrays always share one TW/TH */
     cloudsImg.src='assets/earth_clouds_4096.png';
   };
-  /* on error dayData stays null and the CSS singularity fallback stays */
+  /* on error dayData stays null; the watchdog reveals the star-logo fallback */
   cloudsImg.onload=function(){ cldData=texData(cloudsImg); };
   dayImg.src='assets/earth_day_color_4096.jpg'; /* the GLB file's own colour map, full size */
 
