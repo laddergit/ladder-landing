@@ -1568,7 +1568,7 @@ window.__startEarth2D=function(){
      and pitch exactly, so the renderer swap can never jump the face
      no matter when the 23 MB model happens to finish loading (the
      refresh-consistency fix — see the GLB script) */
-  var phaseObj={rot:rot,pitch:pitch};
+  var phaseObj={rot:rot,pitch:pitch,rotC:rotC};
   window.__earthPhase=phaseObj;
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
 
@@ -1733,7 +1733,7 @@ window.__startEarth2D=function(){
       if(Math.abs(velRot)<0.0005)velRot=0;
       if(Math.abs(velPitch)<0.0005)velPitch=0;
     }
-    phaseObj.rot=rot; phaseObj.pitch=pitch; /* the GLB globe phase-locks to this until its handoff completes */
+    phaseObj.rot=rot; phaseObj.pitch=pitch; phaseObj.rotC=rotC; /* the GLB globe phase-locks to this — surface AND clouds — until its handoff completes */
     rotC-=0.088*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1); /* clouds drift a touch faster */
     /* the dive dolly, quantised: rebuild the projection only when the
        quantised depth changes, and let a CSS scale on the canvas itself
@@ -1885,8 +1885,9 @@ window.__startEarth2D();
    recolouring is applied either.
 
    Interaction matches the globe it replaces: slow constant spin with
-   Africa opening centre-frame (the model's UV azimuth equals its
-   longitude, so spin 0.35 rad centres ~20°E), drag to rotate with
+   Africa opening centre-frame (verified from the model's own
+   geometry: UV azimuth equals longitude with zero offset, so spin
+   0.30 rad centres ~17°E — the 2D globe's exact opening face), drag to rotate with
    inertia and clamped pitch, a fixed 14° axial lean, and the glide
    choreography transforms .sing-body, which applies to this WebGL
    canvas exactly as it did to the 2D one. The dive, though, is this
@@ -1969,7 +1970,7 @@ window.__startEarth2D();
 
   /* ---------- rotation state — same feel as the globe it replaces ---------- */
   var TAU=6.2831853;
-  var spinY=0.35; /* Africa / Sahara centre-frame on open */
+  var spinY=0.30; /* Africa / Sahara centre-frame on open — the 2D globe's opening rot; measured from the GLB's own geometry, model azimuth equals texture longitude with zero offset, so one value opens the same face in both renderers */
   var pitch=0, velSpin=0, velPitch=0;
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
   var dragging=false,lastX=0,lastY=0;
@@ -2013,7 +2014,7 @@ window.__startEarth2D();
       .observe(document.querySelector('.sing'));
   }
 
-  var spinGroup=null, cloudNode=null, cloudBaseQ=null, cloudExtra=0, haloMat=null, rimMat=null;
+  var spinGroup=null, cloudNode=null, cloudBaseQ=null, cloudExtra=0, cloudLock=null, haloMat=null, rimMat=null;
   var YAXIS=null, tmpQ=null;
   var frames=0, lastNow=performance.now();
 
@@ -2033,19 +2034,29 @@ window.__startEarth2D();
        this, each renderer integrated spin from its own start time
        at its own rate — 0.08 vs 0.05 rad/s from different opening
        angles — so the swap landed on a different face every time.)
-       The +0.05 rad offset is the calibration between the two
-       renderers' azimuth conventions: 2D rot 0.30 and model
-       spinY 0.35 both centre Africa at ~20°E. After the handoff
+       The calibration between the two renderers' azimuth
+       conventions is EXACTLY zero, measured from the GLB binary
+       itself (not assumed): parsing the model's own geometry,
+       a surface point's scene azimuth equals its texture
+       longitude with 0.00° offset and 0.00° spread, its embedded
+       day map is byte-identical to the 2D globe's map, and the
+       cloud shell fits the same relation — so spinY = rot and
+       cloudExtra = rotC - rot reproduce the 2D globe's surface
+       and clouds point-for-point. (An earlier +0.05 rad fudge
+       factor and an unlocked cloud layer were the residue of
+       assuming a convention the file does not use.) After the handoff
        this globe integrates its own spin at the SAME 0.08 rad/s
        the 2D globe uses, so the feel never changes across the
        swap either. If the 2D globe never came live there is no
        phase to follow and the model simply runs its own clock,
        exactly as the fallback path always has. */
     if(!swapDone&&window.__earth2DLive&&window.__earthPhase){
-      spinY=window.__earthPhase.rot+0.05;
+      spinY=window.__earthPhase.rot;
       pitch=window.__earthPhase.pitch;
+      cloudLock=(typeof window.__earthPhase.rotC==='number')?(window.__earthPhase.rotC-window.__earthPhase.rot):null;
       velSpin=0; velPitch=0;
     }else if(!dragging){
+      cloudLock=null;
       if(!reduceMotion)spinY-=0.08*dt*(window.__diveSpin||1); /* slow constant spin — the 2D globe's rate, so the swap never changes the feel; features drift left to right */
       spinY+=velSpin*dt;
       pitch=clamp(pitch+velPitch*dt,-0.55,0.55);
@@ -2108,8 +2119,9 @@ window.__startEarth2D();
         }catch(e){}
       }
     }
-    if(cloudNode&&cloudBaseQ){ /* clouds drift a touch faster than the surface — 0.008 rad/s relative, the 2D globe's exact cloud lead (0.088 vs 0.08), so the drift feels identical across the swap */
-      cloudExtra-=0.008*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1);
+    if(cloudNode&&cloudBaseQ){ /* clouds drift a touch faster than the surface — 0.008 rad/s relative, the 2D globe's exact cloud lead (0.088 vs 0.08), so the drift feels identical across the swap. Until the handoff completes the drift is not integrated at all: cloudExtra is locked to the 2D globe's live cloud lead (rotC - rot), because this layer used to start from 0 whenever the model happened to load — at swap time the 2D clouds sat ~0.7 rad away from the model's, so the whole cloud pattern jumped to a different sky at a different second on every refresh, which is exactly what the user's refresh video kept showing even after the surface was phase-locked */
+      if(!swapDone&&cloudLock!==null)cloudExtra=cloudLock;
+      else cloudExtra-=0.008*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1);
       tmpQ.setFromAxisAngle(YAXIS,cloudExtra);
       cloudNode.quaternion.copy(cloudBaseQ).premultiply(tmpQ);
     }
@@ -2224,7 +2236,29 @@ window.__startEarth2D();
         new THREE.ShaderMaterial({
           vertexShader:atmVert,
           uniforms:{ uGain:{value:1} },
-          fragmentShader:'varying vec3 vN; uniform float uGain; void main(){ float f=pow(1.0-abs(vN.z),3.0); gl_FragColor=vec4(vec3(0.62,0.76,1.0)*f*0.85*uGain,1.0); }',
+          /* the glow intensity rides in the ALPHA channel, not the
+             RGB: with AdditiveBlending (SRC_ALPHA, ONE) the colour
+             contribution is colour x alpha — identical brightness to
+             baking the intensity into RGB — but the drawing buffer's
+             alpha then tracks the glow instead of sitting at 1.0
+             across the whole shell. Both shells used to output
+             alpha 1.0 with near-zero RGB over most of their disc;
+             the browser composites this transparent canvas as
+             premultiplied alpha, so those pixels displayed as the
+             buffer's ~black instead of the page behind them: a
+             solid black disc the size of the halo silhouette
+             (1.18x the Earth), visible in light mode as a black
+             octagon around the globe and in dark mode as a starless
+             black cut-out — clipped into straight vertical edges by
+             the square canvas whenever the dive pushed the halo past
+             the box (the user's progress-0.935 screenshots in both
+             themes, pixel-measured: neutral (5,5,4) fill out to
+             exactly 5.9/5 x the disc radius, straight at the canvas
+             edges). With alpha = intensity, wherever the glow fades
+             to 0 the pixel is fully transparent and the page shows
+             through untouched; the blue atmosphere itself is
+             unchanged. */
+          fragmentShader:'varying vec3 vN; uniform float uGain; void main(){ float i=pow(1.0-abs(vN.z),3.0)*0.85*uGain; gl_FragColor=vec4(vec3(0.62,0.76,1.0),i); }',
           blending:THREE.AdditiveBlending, transparent:true, depthWrite:false
         })
       );
@@ -2248,7 +2282,7 @@ window.__startEarth2D();
              rest the shell sits at r <= 0.39 so the fade never
              touches it. uSize is the drawing-buffer size in
              device px, refreshed every frame in animate(). */
-          fragmentShader:'varying vec3 vN; uniform float uSize; uniform float uGain; void main(){ float f=pow(max(0.0,0.66-dot(vN,vec3(0.0,0.0,1.0))),3.0); float r=length(gl_FragCoord.xy/uSize-0.5); float edge=1.0-smoothstep(0.40,0.46,r); gl_FragColor=vec4(vec3(0.55,0.70,1.0)*f*0.9*edge*uGain,1.0); }',
+          fragmentShader:'varying vec3 vN; uniform float uSize; uniform float uGain; void main(){ float f=pow(max(0.0,0.66-dot(vN,vec3(0.0,0.0,1.0))),3.0); float r=length(gl_FragCoord.xy/uSize-0.5); float edge=1.0-smoothstep(0.40,0.46,r); float i=min(1.0,f*0.9*edge*uGain); gl_FragColor=vec4(vec3(0.55,0.70,1.0),i); }',
           side:THREE.BackSide, blending:THREE.AdditiveBlending, transparent:true, depthWrite:false
         })
       );
