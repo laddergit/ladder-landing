@@ -134,6 +134,9 @@ section{position:relative}
 .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
 .btn-ghost:hover{border-color:var(--ink)}
 .btn-sm{padding:.55rem 1rem;font-size:.88rem;border-radius:8px}
+.launch-soon{cursor:not-allowed;user-select:none}
+.launch-soon .soon-tag,.foot-off .soon-tag{font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;line-height:1;padding:.3rem .45rem;border:1px solid currentColor;border-radius:999px;opacity:.72;flex:none}
+.foot-off{display:flex;align-items:center;gap:.55rem;padding:.28rem 0;font-size:.95rem;cursor:not-allowed;user-select:none}
 .burger{display:none;width:42px;height:42px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;place-items:center;cursor:pointer}
 .burger svg{width:20px;height:20px}
 .mobile-menu{display:none;border-top:1px solid var(--line-soft);padding:.8rem 1.25rem 1.2rem;background:var(--bg)}
@@ -540,6 +543,10 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   .countdown .cd-nums{gap:1rem}
   .countdown .cd-nums b{font-size:1.55rem}
   .topnav .btn{padding:.55rem .85rem;font-size:.85rem}
+  .topnav-in{gap:.6rem;padding-inline:.8rem}
+  .nav-right{gap:.45rem}
+  .topnav .launch-soon{padding:.5rem .55rem;font-size:.78rem;gap:.3rem}
+  .topnav .launch-soon .soon-tag{font-size:.48rem;padding:.2rem .3rem;letter-spacing:.09em}
 }
 @media (prefers-reduced-motion:reduce){
   .ring.spin,.ring.spin-rev,.sing-cue i,.sing-grain,.sing-logo{animation:none}
@@ -576,7 +583,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         <span class="dl-word" aria-hidden="true"><b id="dlWord">Night</b></span>
       </button>
       <span class="chain-pill"><i></i> Elysium Testnet · 99801</span>
-      <a class="btn btn-primary btn-sm" href="https://app.ladderswap.trade" target="_blank" rel="noopener">Launch App ↗</a>
+      <span class="btn btn-primary btn-sm launch-soon" aria-disabled="true" title="Coming soon">Launch App <span class="soon-tag">Soon</span></span>
       <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
   </div>
@@ -972,7 +979,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <h2 class="rv">Ready to climb?</h2>
     <p class="rv">Grab testnet HYPE from the faucet, connect your wallet, and take your first step on Elysium. Swap at market, seed a pool, or wait for the ladder to come to you.</p>
     <div class="cta-row rv">
-      <a class="btn btn-primary" href="https://app.ladderswap.trade" target="_blank" rel="noopener" style="padding:1rem 1.7rem;font-size:1rem">Launch the App ↗</a>
+      <span class="btn btn-primary launch-soon" aria-disabled="true" title="Coming soon" style="padding:1rem 1.7rem;font-size:1rem">Launch the App <span class="soon-tag">Soon</span></span>
       <a class="btn btn-ghost" href="https://elysium.kinetiq.xyz/faucet" target="_blank" rel="noopener" style="padding:1rem 1.7rem;font-size:1rem">Get Testnet HYPE</a>
     </div>
   </div>
@@ -988,8 +995,8 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         <p class="mono" style="font-size:.72rem;letter-spacing:.14em"><a href="https://x.com/ladderswap" target="_blank" rel="noopener" style="display:inline;padding:0">@ladderswap on X ↗</a></p>
       </div>
       <div><h4>App</h4>
-        <a href="https://app.ladderswap.trade" target="_blank" rel="noopener">Swap &amp; Pools</a>
-        <a href="https://app.ladderswap.trade" target="_blank" rel="noopener">Memecoin Launchpad</a>
+        <span class="foot-off" aria-disabled="true" title="Coming soon">Swap &amp; Pools <span class="soon-tag">Soon</span></span>
+        <span class="foot-off" aria-disabled="true" title="Coming soon">Memecoin Launchpad <span class="soon-tag">Soon</span></span>
         <a href="https://earn.ladderswap.trade" target="_blank" rel="noopener">Ladder Earn</a>
         <a href="https://ladderswap.trade/tracker" target="_blank" rel="noopener">Tracker</a>
       </div>
