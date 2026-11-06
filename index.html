@@ -2,7 +2,7 @@
 <!--
   DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
   Push these 10 files, byte for byte, replacing the old landing page's index.html:
-    index.html                        133,715 bytes (this file, manifest comment included)
+    index.html                        137,725 bytes (this file, manifest comment included)
     assets/earth_0_zhtn.glb        23,342,728 bytes
     assets/earth_clouds_4096.png    9,848,258 bytes
     assets/earth_day_color_4096.jpg 2,693,045 bytes
@@ -42,7 +42,7 @@
   --h-bg:#f4f4f4; --h-ink:#0d0d0d; --h-muted:#4a4a4a; --h-faint:rgba(13,13,13,.5);
   --h-green:#111111; --h-green-dim:rgba(17,17,17,.85); --h-line:rgba(0,0,0,.28);
   --h-glass:rgba(255,255,255,.68); --h-glass-hair:rgba(13,13,13,.14);
-  --h-cta-ink:#ffffff; --scrim:rgba(255,255,255,.88);
+  --h-cta-ink:#ffffff; --scrim:rgba(255,255,255,.78);
   --shadow-rest:0 1px 2px -1px rgba(0,0,0,.1),0 2px 6px -2px rgba(0,0,0,.07),0 6px 14px -6px rgba(0,0,0,.05);
   --shadow-raised:0 1px 2px -1px rgba(0,0,0,.1),0 6px 12px -4px rgba(0,0,0,.09),0 16px 32px -12px rgba(0,0,0,.1);
   --font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -198,7 +198,7 @@ section{position:relative}
 /* light scheme: a soft dark disc sits behind the globe so the Earth keeps a
    hard silhouette on the near-white hero */
 @media (prefers-color-scheme:light){
-  .sing-body.has-globe::before{content:"";position:absolute;left:50%;top:50%;width:74%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(15,15,15,.17) 0%,rgba(15,15,15,.06) 56%,transparent 72%);pointer-events:none}
+  .sing-body.has-globe::before{content:"";position:absolute;left:50%;top:50%;width:78%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(15,15,15,.34) 0%,rgba(15,15,15,.15) 55%,transparent 76%);pointer-events:none}
 }
 .sing-hud{position:absolute;left:clamp(1rem,3.5vw,2.75rem);bottom:clamp(1rem,3.5vh,2rem);z-index:9;font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--h-faint);line-height:1.9;padding-left:12px;border-left:1px solid rgba(140,140,140,.28)}
 .sing-hud .row{display:flex;gap:1.1rem}
@@ -227,6 +227,16 @@ section{position:relative}
 .stage.on a,.stage.on button{pointer-events:auto}
 .stage-in{max-width:880px;position:relative}
 .stage-in::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120%;height:130%;z-index:-1;pointer-events:none;background:radial-gradient(60% 56% at 50% 52%,var(--scrim) 0,transparent 72%);-webkit-mask:radial-gradient(60% 56% at 50% 52%,#000 32%,transparent 78%);mask:radial-gradient(60% 56% at 50% 52%,#000 32%,transparent 78%)}
+/* light scheme: the scrim shrinks and tightens. At full size its white
+   wash covered the whole globe behind the hero text and fogged the
+   disc into a grey moon (the user's light-mode screenshot); narrowed
+   to the text block, it still backs the headline and sub for
+   readability but leaves most of the Earth uncovered and saturated.
+   Dark mode keeps the full-size scrim above, untouched. */
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]) .stage-in::before{width:106%;height:116%;background:radial-gradient(54% 48% at 50% 50%,var(--scrim) 0,transparent 60%);-webkit-mask:radial-gradient(54% 48% at 50% 50%,#000 24%,transparent 64%);mask:radial-gradient(54% 48% at 50% 50%,#000 24%,transparent 64%)}
+}
+:root[data-theme="light"] .stage-in::before{width:106%;height:116%;background:radial-gradient(54% 48% at 50% 50%,var(--scrim) 0,transparent 60%);-webkit-mask:radial-gradient(54% 48% at 50% 50%,#000 24%,transparent 64%);mask:radial-gradient(54% 48% at 50% 50%,#000 24%,transparent 64%)}
 .stage.split{justify-content:flex-start;text-align:left}
 .stage.split .stage-in{max-width:600px;margin-left:clamp(1rem,11vw,10rem);padding-left:1.6rem}
 .stage.split .stage-in::after{content:"";position:absolute;left:0;top:.25rem;bottom:.25rem;width:1px;background:linear-gradient(180deg,var(--h-green),rgba(140,140,140,.04));transform:scaleY(0);transform-origin:top;transition:transform .8s var(--ease) .15s}
@@ -441,7 +451,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
    hero included. */
 :root[data-theme="light"] .sing-vig{background:radial-gradient(130% 90% at 50% 46%,transparent 62%,rgba(20,20,20,.07) 100%)}
 :root[data-theme="dark"] .sing-vig{background:radial-gradient(130% 90% at 50% 46%,transparent 40%,rgba(5,5,5,.28) 80%,rgba(4,4,4,.5) 100%)}
-:root[data-theme="light"] .sing-body.has-globe::before{content:"";position:absolute;left:50%;top:50%;width:74%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(15,15,15,.17) 0%,rgba(15,15,15,.06) 56%,transparent 72%);pointer-events:none}
+:root[data-theme="light"] .sing-body.has-globe::before{content:"";position:absolute;left:50%;top:50%;width:78%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(15,15,15,.34) 0%,rgba(15,15,15,.15) 55%,transparent 76%);pointer-events:none}
 :root[data-theme="dark"] .sing-body.has-globe::before{content:none;background:none}
 :root[data-theme="light"] .svc .ic{background:var(--brand);color:#fff;border-color:var(--brand)}
 :root[data-theme="dark"] .svc .ic{background:radial-gradient(circle at 50% 30%,rgba(140,140,140,.22),rgba(10,10,10,.92) 78%);color:var(--brand-bright);border-color:var(--brand-line)}
@@ -1751,19 +1761,29 @@ window.__startEarth2D=function(){
        so the box's edges can never print on screen — the glow fades
        out as a circle, and the only edges left are the limb's curve
        and the screen's own. */
+    /* theme-aware: the rim and halo strengths are tuned for the black
+       hero. On the near-white light hero the full-strength pale-blue
+       glow blooms into a milky band around the disc, so in light mode
+       the halo eases off and the rim reads as a deeper blue line —
+       but the blue atmosphere light itself stays clearly visible (the
+       user likes it, including on refresh while this 2D globe is the
+       one on screen); only its bloom is tamed. Read per frame from
+       window.__ladderTheme (set by the daylight toggle), so flipping
+       the switch restyles the atmosphere live. Dark values unchanged. */
+    var ltMode=window.__ladderTheme==='light';
     var haloOut=Math.min(RR*1.18,S*0.485);
     var halo=ctx.createRadialGradient(ccx,ccy,RR*0.94,ccx,ccy,haloOut);
     halo.addColorStop(0,'rgba(168,203,255,0)');
-    halo.addColorStop(0.62,'rgba(168,203,255,0.16)');
+    halo.addColorStop(0.62,'rgba(168,203,255,'+(ltMode?0.1:0.16)+')');
     halo.addColorStop(1,'rgba(168,203,255,0)');
     ctx.beginPath(); ctx.arc(ccx,ccy,haloOut,0,6.2832);
     ctx.fillStyle=halo; ctx.fill();
     ctx.beginPath(); ctx.arc(ccx,ccy,RR*0.996,0,6.2832);
-    ctx.strokeStyle='rgba(196,220,255,0.55)';
+    ctx.strokeStyle=ltMode?'rgba(110,160,240,0.5)':'rgba(196,220,255,0.55)';
     ctx.lineWidth=Math.max(1,S*0.0035);
     ctx.stroke();
     ctx.beginPath(); ctx.arc(ccx,ccy,RR*0.985,0,6.2832);
-    ctx.strokeStyle='rgba(150,185,240,0.22)';
+    ctx.strokeStyle=ltMode?'rgba(100,150,230,0.16)':'rgba(150,185,240,0.22)';
     ctx.lineWidth=Math.max(1,S*0.009);
     ctx.stroke();
 
@@ -1918,7 +1938,7 @@ window.__startEarth2D();
       .observe(document.querySelector('.sing'));
   }
 
-  var spinGroup=null, cloudNode=null, cloudBaseQ=null, cloudExtra=0, haloMat=null;
+  var spinGroup=null, cloudNode=null, cloudBaseQ=null, cloudExtra=0, haloMat=null, rimMat=null;
   var YAXIS=null, tmpQ=null;
   var frames=0, lastNow=performance.now();
 
@@ -1997,6 +2017,18 @@ window.__startEarth2D();
       cloudNode.quaternion.copy(cloudBaseQ).premultiply(tmpQ);
     }
     if(haloMat&&cv)haloMat.uniforms.uSize.value=cv.width; /* the halo's screen-space edge fade tracks the drawing buffer */
+    /* theme-aware atmosphere: both shells blend additively, which is
+       tuned for the black hero — on the near-white light hero the same
+       gain blooms into a milky band around the disc, so light mode
+       runs the shells at just over half their dark-mode strength: the
+       blue atmosphere light stays clearly present (the user likes it
+       and asked for it not to be removed), only its bloom is tamed
+       (the 2D globe above does the same with its rim/halo alphas).
+       Read per frame from window.__ladderTheme, so the daylight
+       toggle restyles the atmosphere live; dark stays at full gain. */
+    var atmGain=window.__ladderTheme==='light'?0.55:1;
+    if(rimMat)rimMat.uniforms.uGain.value=atmGain;
+    if(haloMat)haloMat.uniforms.uGain.value=atmGain;
     renderer.render(scene,camera);
     frames++;
     if(!announced&&frames>=3){
@@ -2074,16 +2106,18 @@ window.__startEarth2D();
         new THREE.SphereGeometry(5.04,64,64),
         new THREE.ShaderMaterial({
           vertexShader:atmVert,
-          fragmentShader:'varying vec3 vN; void main(){ float f=pow(1.0-abs(vN.z),3.0); gl_FragColor=vec4(vec3(0.62,0.76,1.0)*f*0.85,1.0); }',
+          uniforms:{ uGain:{value:1} },
+          fragmentShader:'varying vec3 vN; uniform float uGain; void main(){ float f=pow(1.0-abs(vN.z),3.0); gl_FragColor=vec4(vec3(0.62,0.76,1.0)*f*0.85*uGain,1.0); }',
           blending:THREE.AdditiveBlending, transparent:true, depthWrite:false
         })
       );
+      rimMat=rim.material;
       spinGroup.add(rim);
       var haloM=new THREE.Mesh(
         new THREE.SphereGeometry(6.1,64,64),
         new THREE.ShaderMaterial({
           vertexShader:atmVert,
-          uniforms:{ uSize:{value:1024} },
+          uniforms:{ uSize:{value:1024}, uGain:{value:1} },
           /* the same flat-cut guard as the 2D globe's halo, in
              screen space: past a dolly of ~x1.22 this shell's
              silhouette grows beyond the framebuffer while its glow
@@ -2095,7 +2129,7 @@ window.__startEarth2D();
              screen; at rest the shell sits at r <= 0.41 and the fade
              never touches it. uSize is the drawing-buffer size in
              device px, refreshed every frame in animate(). */
-          fragmentShader:'varying vec3 vN; uniform float uSize; void main(){ float f=pow(max(0.0,0.66-dot(vN,vec3(0.0,0.0,1.0))),3.0); float r=length(gl_FragCoord.xy/uSize-0.5); float edge=1.0-smoothstep(0.44,0.495,r); gl_FragColor=vec4(vec3(0.55,0.70,1.0)*f*0.9*edge,1.0); }',
+          fragmentShader:'varying vec3 vN; uniform float uSize; uniform float uGain; void main(){ float f=pow(max(0.0,0.66-dot(vN,vec3(0.0,0.0,1.0))),3.0); float r=length(gl_FragCoord.xy/uSize-0.5); float edge=1.0-smoothstep(0.44,0.495,r); gl_FragColor=vec4(vec3(0.55,0.70,1.0)*f*0.9*edge*uGain,1.0); }',
           side:THREE.BackSide, blending:THREE.AdditiveBlending, transparent:true, depthWrite:false
         })
       );
