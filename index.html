@@ -1559,10 +1559,31 @@ window.__startEarth2D=function(){
 
   /* ---------- rotation state ----------
      rot   = longitude (rad) facing the viewer at disc centre
-     pitch = latitude tilt (rad) from vertical drags */
+     pitch = latitude tilt (rad) from vertical drags
+     The phase is a pure function of the navigation timeline (rAF
+     timestamps are milliseconds since navigation start): rot and
+     rotC are recomputed from scratch every frame as base(now) +
+     adjustment, where the adjustment carries only what the timeline
+     cannot know — drag deltas, inertia, and the dive's extra spin.
+     Nothing in the phase waits for a texture: the 2.7 MB day map and
+     the 9.8 MB cloud map arrive at a different second on every
+     connection, and when the spin was instead accumulated from
+     "when the data landed" (all builds up to the phase-locked
+     handoff), each refresh opened on whatever face that second
+     implied — seconds of load jitter became whole continents of
+     difference, main-thread stalls (the 23 MB GLB parse, the 4096px
+     readback) silently ate capped-dt phase, and the phase-locked
+     GLB handoff faithfully mirrored the wrong face. Now, at any
+     given moment after navigation, every load shows the same face
+     and the same cloud pattern, however the downloads happened to
+     go — the spin the user sees is a clock, not a race. */
   var TAU=6.2831853;
-  var rot=0.30; /* open on Africa & the Sahara — the brightest face first */
-  var rotC=1.10, pitch=0, velRot=0, velPitch=0;
+  var ROT0=0.30; /* open on Africa & the Sahara — the brightest face first */
+  var ROTC0=1.10;
+  var SURF=reduceMotion?0:0.08;        /* surface spin, rad/s */
+  var CLD=0.088*(reduceMotion?0.25:1); /* clouds drift a touch faster */
+  var rot=ROT0, rotC=ROTC0, pitch=0, velRot=0, velPitch=0;
+  var rotAdj=0, rotCAdj=0; /* drag / inertia / dive-speedup deltas on top of the timeline phase */
   /* live rotation phase, published every frame for the GLB globe:
      until its handoff completes, the model mirrors this globe's rot
      and pitch exactly, so the renderer swap can never jump the face
@@ -1585,7 +1606,7 @@ window.__startEarth2D=function(){
     if(!dragging)return;
     var dx=e.clientX-lastX, dy=e.clientY-lastY;
     lastX=e.clientX; lastY=e.clientY;
-    rot-=dx*0.0052; /* surface follows the pointer */
+    rotAdj-=dx*0.0052; /* surface follows the pointer */
     pitch=clamp(pitch+dy*0.003,-0.55,0.55);
     velRot=-dx*0.0052*60; velPitch=dy*0.003*60;
   });
@@ -1721,20 +1742,33 @@ window.__startEarth2D=function(){
     requestAnimationFrame(animate);
     var dt=Math.min((now-lastNow)/1000,0.05);
     lastNow=now;
-    if(!visible||!dayData)return;
-    if(!S)resize();
-    if(!S)return;
-    if(!dragging){
-      if(!reduceMotion)rot-=0.08*dt*(window.__diveSpin||1); /* slow constant spin, speeding up inside the hero's zoom */
-      rot+=velRot*dt;
+    /* phase first, pixels second: the rotation state is derived and
+       published on EVERY frame from the very first one — before the
+       day map has arrived, and while the hero is off screen —
+       because it comes from the rAF timestamp (the navigation
+       timeline), not from accumulation while drawing. The GLB globe
+       mirrors this phase until its handoff, so it inherits the same
+       refresh determinism. */
+    var ds=(window.__diveSpin||1);
+    if(dragging){
+      rotAdj-=SURF*dt*ds; /* hold the surface under the pointer: cancel this frame's timeline advance, dive speedup included */
+    }else{
+      rotAdj+=velRot*dt;
+      if(!reduceMotion)rotAdj-=SURF*dt*(ds-1); /* the dive's extra spin, beyond the timeline's base rate */
       pitch=clamp(pitch+velPitch*dt,-0.55,0.55);
       velRot*=Math.pow(0.12,dt);
       velPitch*=Math.pow(0.12,dt);
       if(Math.abs(velRot)<0.0005)velRot=0;
       if(Math.abs(velPitch)<0.0005)velPitch=0;
     }
+    rotCAdj-=CLD*dt*(ds-1); /* the clouds' share of the dive's extra spin */
+    var tS=now/1000;
+    rot=ROT0-SURF*tS+rotAdj;
+    rotC=ROTC0-CLD*tS+rotCAdj;
     phaseObj.rot=rot; phaseObj.pitch=pitch; phaseObj.rotC=rotC; /* the GLB globe phase-locks to this — surface AND clouds — until its handoff completes */
-    rotC-=0.088*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1); /* clouds drift a touch faster */
+    if(!visible||!dayData)return;
+    if(!S)resize();
+    if(!S)return;
     /* the dive dolly, quantised: rebuild the projection only when the
        quantised depth changes, and let a CSS scale on the canvas itself
        carry the remainder so the zoom the user sees is still
@@ -1772,11 +1806,15 @@ window.__startEarth2D=function(){
     if(builtPitch===null||builtZoom!==zq||Math.abs(Math.round(pitch/0.01)*0.01-builtPitch)>0.001)buildMaps(zq);
 
     /* the 9.8 MB cloud map lands after the day map, at a different
-       moment on every connection: fade its blend in over ~1.4 s from
-       arrival instead of popping a whole cloud layer onto the disc
-       mid-load, so a refresh never changes the Earth's face at a
-       random second */
-    var cldFade=cldData?(cldT0<0?1:Math.min(1,Math.max(0,(now-cldT0)/1400))):0;
+       moment on every connection: fade its blend in over ~1.4 s
+       instead of popping a whole cloud layer onto the disc mid-load.
+       The fade is anchored to the navigation timeline like the phase
+       itself — it starts at 2.5 s after navigation, or on arrival if
+       the map lands later than that (data cannot be shown before it
+       exists) — so on any connection fast enough to have the map by
+       then, the clouds materialise at the same second of every
+       refresh, in the same timeline-locked pattern positions */
+    var cldFade=cldData?(cldT0<0?1:Math.min(1,Math.max(0,(now-Math.max(cldT0,2500))/1400))):0;
     buf.fill(0);
     var du=((Math.round(rot/TAU*TW)%TW)+TW)%TW;
     var duC=cldData?(((Math.round(rotC/TAU*TW)%TW)+TW)%TW):0;
@@ -2177,7 +2215,15 @@ window.__startEarth2D();
          globe never came live (its texture failed) there is nothing
          to hold for, and the fade runs immediately. */
       var liveAt=window.__earth2DLiveAt||0;
-      var holdMs=liveAt?Math.max(0,1500-(performance.now()-liveAt)):0;
+      /* the fade is scheduled on the navigation timeline, not from
+         whenever the downloads happened to finish: the 2D globe
+         keeps its minimum 1.5 s on screen, and the swap never starts
+         before a fixed 3.4 s after navigation — so whenever the
+         model verifies inside that window, the handoff lands at the
+         exact same second of every refresh; a slower model swaps the
+         moment it is verified, with the phase (a pure function of
+         the same timeline) already correct whenever it arrives */
+      var holdMs=liveAt?Math.max(0,Math.max(liveAt+1500,3400)-performance.now()):0;
       setTimeout(function(){
         cv.style.opacity='1';
         setTimeout(function(){
