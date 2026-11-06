@@ -1306,6 +1306,21 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   if(starCv&&starCv.getContext){
     var sctx=starCv.getContext('2d');
     var darkMq=window.matchMedia('(prefers-color-scheme: dark)');
+    /* deterministic starfield: the field used to be re-rolled with
+       Math.random() on every load — and again on every resize and
+       theme flip — so the sky itself was different on each refresh.
+       A fixed-seed PRNG (mulberry32), re-seeded at the top of every
+       draw, lays down the identical field every time: same stars,
+       same sizes, same brightness, in both colour schemes. Positions
+       are fractions of the canvas, so the same sky scales to any
+       window size instead of being re-invented for it. */
+    var starSeed=0;
+    function starRand(){
+      starSeed=(starSeed+0x6D2B79F5)|0;
+      var t=Math.imul(starSeed^(starSeed>>>15),1|starSeed);
+      t=(t+Math.imul(t^(t>>>7),61|t))^t;
+      return ((t^(t>>>14))>>>0)/4294967296;
+    }
     var drawStars=function(){
       var host=starCv.parentElement;
       var w=host.clientWidth, h=host.clientHeight;
@@ -1313,16 +1328,17 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       var dpr=Math.min(window.devicePixelRatio||1,1.5);
       starCv.width=Math.round(w*dpr); starCv.height=Math.round(h*dpr);
       sctx.clearRect(0,0,starCv.width,starCv.height);
+      starSeed=20261109; /* fixed seed — one sky, identical on every load */
       /* dense starfield like the reference: ~5x the old count, mixed sizes,
          a few bright stars with a soft halo. White on the dark hero,
          dark specks on the light hero so the field reads in both schemes. */
       var dark=window.__ladderTheme?window.__ladderTheme==='dark':darkMq.matches;
       var n=Math.round(w*h/2400);
       for(var i=0;i<n;i++){
-        var x=Math.random()*starCv.width, y=Math.random()*starCv.height;
-        var big=Math.random()<0.05;
-        var r=(big?(Math.random()*0.9+1.5):(Math.random()*1.1+0.35))*dpr;
-        var a=dark?(Math.random()*0.7+0.2):(Math.random()*0.42+0.14);
+        var x=starRand()*starCv.width, y=starRand()*starCv.height;
+        var big=starRand()<0.05;
+        var r=(big?(starRand()*0.9+1.5):(starRand()*1.1+0.35))*dpr;
+        var a=dark?(starRand()*0.7+0.2):(starRand()*0.42+0.14);
         if(big){
           var halo=sctx.createRadialGradient(x,y,0,x,y,r*5);
           halo.addColorStop(0,'rgba('+(dark?'255,255,255':'25,25,25')+','+(a*0.5).toFixed(2)+')');
@@ -1514,6 +1530,7 @@ window.__startEarth2D=function(){
      compression, so both fallback textures below are byte-for-byte
      extractions of the original model's own maps */
   var dayData=null, cldData=null;
+  var cldT0=-1; /* when the cloud map landed — its blend fades in from there (see animate) */
   function texData(img){
     /* if a device refuses a 4096-wide readback canvas, retry once at
        half size rather than leaving the globe unpainted */
@@ -1537,7 +1554,7 @@ window.__startEarth2D=function(){
     cloudsImg.src='assets/earth_clouds_4096.png';
   };
   /* on error dayData stays null; the watchdog reveals the star-logo fallback */
-  cloudsImg.onload=function(){ cldData=texData(cloudsImg); };
+  cloudsImg.onload=function(){ cldData=texData(cloudsImg); if(cldData)cldT0=performance.now(); };
   dayImg.src='assets/earth_day_color_4096.jpg'; /* the GLB file's own colour map, full size */
 
   /* ---------- rotation state ----------
@@ -1546,6 +1563,13 @@ window.__startEarth2D=function(){
   var TAU=6.2831853;
   var rot=0.30; /* open on Africa & the Sahara — the brightest face first */
   var rotC=1.10, pitch=0, velRot=0, velPitch=0;
+  /* live rotation phase, published every frame for the GLB globe:
+     until its handoff completes, the model mirrors this globe's rot
+     and pitch exactly, so the renderer swap can never jump the face
+     no matter when the 23 MB model happens to finish loading (the
+     refresh-consistency fix — see the GLB script) */
+  var phaseObj={rot:rot,pitch:pitch};
+  window.__earthPhase=phaseObj;
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
 
   /* ---------- drag to rotate (wheel stays with the page scroll) ---------- */
@@ -1709,6 +1733,7 @@ window.__startEarth2D=function(){
       if(Math.abs(velRot)<0.0005)velRot=0;
       if(Math.abs(velPitch)<0.0005)velPitch=0;
     }
+    phaseObj.rot=rot; phaseObj.pitch=pitch; /* the GLB globe phase-locks to this until its handoff completes */
     rotC-=0.088*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1); /* clouds drift a touch faster */
     /* the dive dolly, quantised: rebuild the projection only when the
        quantised depth changes, and let a CSS scale on the canvas itself
@@ -1746,6 +1771,12 @@ window.__startEarth2D=function(){
     }
     if(builtPitch===null||builtZoom!==zq||Math.abs(Math.round(pitch/0.01)*0.01-builtPitch)>0.001)buildMaps(zq);
 
+    /* the 9.8 MB cloud map lands after the day map, at a different
+       moment on every connection: fade its blend in over ~1.4 s from
+       arrival instead of popping a whole cloud layer onto the disc
+       mid-load, so a refresh never changes the Earth's face at a
+       random second */
+    var cldFade=cldData?(cldT0<0?1:Math.min(1,Math.max(0,(now-cldT0)/1400))):0;
     buf.fill(0);
     var du=((Math.round(rot/TAU*TW)%TW)+TW)%TW;
     var duC=cldData?(((Math.round(rotC/TAU*TW)%TW)+TW)%TW):0;
@@ -1757,7 +1788,7 @@ window.__startEarth2D=function(){
         var co=(pixRow[i]*TW+((pixCol[i]+duC)&(TW-1)))*4;
         var ca=cldData[co+3];
         if(ca){
-          var af=ca*0.0019608, ia=1-af; /* cloud alpha at half strength */
+          var af=ca*0.0019608*cldFade, ia=1-af; /* cloud alpha at half strength, faded in on arrival */
           r=r*ia+cldData[co]*af;
           g=g*ia+cldData[co+1]*af;
           b=b*ia+cldData[co+2]*af;
@@ -1825,7 +1856,7 @@ window.__startEarth2D=function(){
     ctx.lineWidth=Math.max(1,S*0.009);
     ctx.stroke();
 
-    if(!announced){ announced=true; window.__earth2DLive=true; body.classList.add('has-globe'); }
+    if(!announced){ announced=true; window.__earth2DLive=true; window.__earth2DLiveAt=now; body.classList.add('has-globe'); }
   }
   requestAnimationFrame(animate);
 };
@@ -1887,7 +1918,7 @@ window.__startEarth2D();
   if(!container||!body)return;
   var reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var renderer=null, cv=null, settled=false, announced=false, dead=false;
+  var renderer=null, cv=null, settled=false, announced=false, dead=false, swapDone=false;
   function fallback(){
     if(settled)return; settled=true; dead=true;
     try{ if(renderer)renderer.dispose(); }catch(e){}
@@ -1906,6 +1937,11 @@ window.__startEarth2D();
   cv.style.display='block';
   cv.style.width='100%';
   cv.style.height='100%';
+  /* invisible until the verified handoff fades it in (see the
+     pixel-check block in animate): the model used to pop in opaque
+     the moment it parsed, at a different second on every refresh */
+  cv.style.opacity='0';
+  cv.style.transition='opacity .8s ease';
   container.appendChild(cv);
   renderer.setClearColor(0x000000,0);
   var maxAniso=4;
@@ -1987,8 +2023,30 @@ window.__startEarth2D();
     var dt=Math.min((now-lastNow)/1000,0.05);
     lastNow=now;
     if(!visible||!spinGroup)return;
-    if(!dragging){
-      if(!reduceMotion)spinY-=0.05*dt*(window.__diveSpin||1); /* slow constant spin, speeding up inside the hero's zoom; features drift left to right */
+    /* refresh determinism — phase-locked handoff: until the swap
+       completes, this globe does NOT run its own clock. It mirrors
+       the 2D globe's live rotation phase (window.__earthPhase,
+       published every frame by the 2D script), so whenever the
+       23 MB model happens to finish loading, the face, pitch and
+       spin it fades in with are exactly where the 2D globe has
+       them — no jump, at any load speed, on any refresh. (Before
+       this, each renderer integrated spin from its own start time
+       at its own rate — 0.08 vs 0.05 rad/s from different opening
+       angles — so the swap landed on a different face every time.)
+       The +0.05 rad offset is the calibration between the two
+       renderers' azimuth conventions: 2D rot 0.30 and model
+       spinY 0.35 both centre Africa at ~20°E. After the handoff
+       this globe integrates its own spin at the SAME 0.08 rad/s
+       the 2D globe uses, so the feel never changes across the
+       swap either. If the 2D globe never came live there is no
+       phase to follow and the model simply runs its own clock,
+       exactly as the fallback path always has. */
+    if(!swapDone&&window.__earth2DLive&&window.__earthPhase){
+      spinY=window.__earthPhase.rot+0.05;
+      pitch=window.__earthPhase.pitch;
+      velSpin=0; velPitch=0;
+    }else if(!dragging){
+      if(!reduceMotion)spinY-=0.08*dt*(window.__diveSpin||1); /* slow constant spin — the 2D globe's rate, so the swap never changes the feel; features drift left to right */
       spinY+=velSpin*dt;
       pitch=clamp(pitch+velPitch*dt,-0.55,0.55);
       velSpin*=Math.pow(0.12,dt);
@@ -2050,8 +2108,8 @@ window.__startEarth2D();
         }catch(e){}
       }
     }
-    if(cloudNode&&cloudBaseQ){ /* clouds drift a touch faster than the surface */
-      cloudExtra-=0.006*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1);
+    if(cloudNode&&cloudBaseQ){ /* clouds drift a touch faster than the surface — 0.008 rad/s relative, the 2D globe's exact cloud lead (0.088 vs 0.08), so the drift feels identical across the swap */
+      cloudExtra-=0.008*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1);
       tmpQ.setFromAxisAngle(YAXIS,cloudExtra);
       cloudNode.quaternion.copy(cloudBaseQ).premultiply(tmpQ);
     }
@@ -2093,8 +2151,28 @@ window.__startEarth2D();
       clearTimeout(loadTimer);
       window.__earth3DLive=true; /* the hero engine splits the dive
          magnification with the camera dolly only while this is set */
-      if(window.__stopEarth2D)window.__stopEarth2D(); /* swap the 2D globe out */
       body.classList.add('has-globe');
+      /* deterministic handoff — the second half of the refresh fix.
+         The swap used to fire the instant the model verified: a hard
+         cut, at whatever second the 23 MB download happened to
+         finish, to a globe whose face was wherever this renderer's
+         own clock had wandered. Now the sequence is fixed on every
+         load: the 2D globe is guaranteed a minimum 1.5 s on screen,
+         then this canvas (transparent until now, phase-locked to the
+         2D globe — see the rotation block above) crossfades in over
+         0.8 s, and only once it is fully in is the 2D canvas
+         retired and this globe released to its own clock. If the 2D
+         globe never came live (its texture failed) there is nothing
+         to hold for, and the fade runs immediately. */
+      var liveAt=window.__earth2DLiveAt||0;
+      var holdMs=liveAt?Math.max(0,1500-(performance.now()-liveAt)):0;
+      setTimeout(function(){
+        cv.style.opacity='1';
+        setTimeout(function(){
+          if(window.__stopEarth2D)window.__stopEarth2D(); /* retire the 2D globe under the faded-in model */
+          swapDone=true; /* from here this globe runs its own clock, at the 2D globe's rate */
+        },850);
+      },holdMs);
     }
   }
   requestAnimationFrame(animate);
