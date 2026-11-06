@@ -1141,8 +1141,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
        2) the dive's magnification (x1 -> ~x9.6 apparent, easing
           pow(diveF,1.35) so most of it lands late and accelerating)
           is SPLIT: part is a real camera dolly inside the WebGL
-          scene (x2.90 — the three.js camera moves from z=21.5 to
-          ~z=8.8, so the surface is re-rendered at full resolution
+          scene (x2.90 — the three.js camera moves from z=21.72
+          inward, capped at x1.39 apparent growth with the canvas
+          element's own scale carrying the remainder, so the surface is re-rendered at full resolution
           every frame with true perspective: the limb flattens, the
           centre looms, features stream outward), and the rest is
           the CSS scale of the globe's box (x3.30), whose lost
@@ -1214,7 +1215,23 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     var bobX=reduceGlide?0:Math.sin(now*0.00031+1.7)*5;
     var bobY=reduceGlide?0:Math.sin(now*0.00045)*7;
     var br=reduceGlide?1:1+Math.sin(now*0.00055)*0.012;
-    var bs=cur.s*br*curDiveCSS;
+    /* viewport-height cap on the GLIDE scale (never on the dive, which
+       is supposed to overflow the frame): the anchors grow the globe
+       to x1.20 beside the split-stage copy, and on a wide-but-short
+       window that scaled disc could climb up under the fixed nav —
+       one half of why the framing on the user's real browser window
+       differed from the tall preview capture. The cap keeps the
+       scaled body's top edge at least 74px down and its bottom edge
+       inside 97% of the viewport height; at ordinary window heights
+       it never binds and the choreography is untouched. */
+    var sUse=cur.s;
+    var bodyW=bodyEl.clientWidth||0;
+    if(bodyW>0&&diveF<=0.001){
+      var vhC=window.innerHeight, cyC=vhC*0.46+cur.y;
+      var sCap=Math.min((cyC-74)*2/bodyW,(vhC*0.97-cyC)*2/bodyW);
+      if(sCap>0.5&&sUse>sCap)sUse=sCap;
+    }
+    var bs=sUse*br*curDiveCSS;
     window.__heroScale=bs; /* total CSS scale on the globe — the WebGL
        renderer raises its resolution in step with it during the dive */
     var tr='translate('+(cur.x+bobX).toFixed(1)+'px,'+(cur.y+bobY).toFixed(1)+'px)';
@@ -1224,8 +1241,21 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
          less than the body, and the dive part tracks the globe's total
          apparent growth (CSS x camera dolly) so the whole ring system
          sweeps past the frame together with the surface */
-      var rs=(1+(cur.s*br-1)*0.85)*(1+(curDiveApp-1)*0.9);
+      var rs=(1+(sUse*br-1)*0.85)*(1+(curDiveApp-1)*0.9);
       ringsEl.style.transform='translate(-50%,-50%) '+tr+' scale('+rs.toFixed(4)+')';
+      /* …but only while the hero is at rest / gliding. The rings were
+         the one dive-scaled layer with no guard at all: at diveF ~0.49
+         (progress 0.949) they were already ~x3.1, and at that radius a
+         ring's curve is so flat that the short arc crossing each
+         bottom corner of the frame read as a straight diagonal cut
+         across the Earth (the user's Explore screenshot). So the ring
+         system now fades out as the dive begins — gone by diveF 0.30,
+         well before the danger window at 0.90–0.97 progress — and
+         fades back in symmetrically when the user scrolls back up.
+         At rest and through every glide stage the rings are fully
+         visible, exactly as before. */
+      var rOp=diveF<=0?1:Math.max(0,1-diveF/0.30);
+      ringsEl.style.opacity=rOp.toFixed(3);
     }
     /* no dive treatment: the globe's colours and shading stay exactly
        as rendered at every point of the zoom — nothing is darkened,
@@ -1771,7 +1801,15 @@ window.__startEarth2D=function(){
        window.__ladderTheme (set by the daylight toggle), so flipping
        the switch restyles the atmosphere live. Dark values unchanged. */
     var ltMode=window.__ladderTheme==='light';
-    var haloOut=Math.min(RR*1.18,S*0.485);
+    /* the clamp was widened from S*0.485 to S*0.46 (safety margin to
+       the canvas edge 0.015 -> 0.04 of the canvas) together with the
+       ring fade in the hero engine, after the progress-0.949 mid-dive
+       screenshot: in the 0.90–0.97 progress window the canvas box
+       still sits inside the viewport while its contents run closest
+       to the box's edges, so every guard gets extra room there. The
+       halo still fades to exactly 0 at haloOut — it just finishes
+       fading earlier, well inside the box. */
+    var haloOut=Math.min(RR*1.18,S*0.46);
     var halo=ctx.createRadialGradient(ccx,ccy,RR*0.94,ccx,ccy,haloOut);
     halo.addColorStop(0,'rgba(168,203,255,0)');
     halo.addColorStop(0.62,'rgba(168,203,255,'+(ltMode?0.1:0.16)+')');
@@ -1822,7 +1860,8 @@ window.__startEarth2D();
    choreography transforms .sing-body, which applies to this WebGL
    canvas exactly as it did to the 2D one. The dive, though, is this
    renderer's own: the hero engine hands it window.__dollyMag and the
-   camera physically flies toward the model (z 21.5 -> ~8.8) while
+   camera physically flies toward the model (z 21.72 -> ~15.9 at the
+   capped dolly, the canvas element's own scale carrying the rest) while
    the engine adds the rest of the growth as CSS scale and this
    renderer raises its pixel ratio to match the total displayed
    size — a real fly-in with
@@ -1874,7 +1913,7 @@ window.__startEarth2D();
 
   var scene=new THREE.Scene();
   var camera=new THREE.PerspectiveCamera(40,1,0.1,120);
-  var CAM_Z=21.5; /* resting camera distance: globe (r=5) fills ~65% of the frame, like the 2D globe */
+  var CAM_Z=21.72; /* resting camera distance: globe (r=5) fills exactly 65% of the frame — the 2D globe's disc diameter (R = 0.325 x canvas) — so when this renderer swaps in over the 2D one the framing does not change (at 21.5 the WebGL disc measured 65.7%: small, but on the user's domain browser, where the GLB loads and the swap really happens, the Earth read bigger than in the 2D-only preview) */
   var TAN0=Math.tan(Math.asin(5/CAM_Z)); /* the disc's resting tan(angular radius) — the dive dolly is expressed against it */
   camera.position.set(0,0,CAM_Z);
 
@@ -2114,7 +2153,7 @@ window.__startEarth2D();
       rimMat=rim.material;
       spinGroup.add(rim);
       var haloM=new THREE.Mesh(
-        new THREE.SphereGeometry(6.1,64,64),
+        new THREE.SphereGeometry(5.9,64,64), /* 1.18x the surface radius — the same halo extent the 2D globe draws (RR x 1.18), so the atmosphere's footprint matches across the renderer swap too (it was 6.1 = 1.22x) */
         new THREE.ShaderMaterial({
           vertexShader:atmVert,
           uniforms:{ uSize:{value:1024}, uGain:{value:1} },
@@ -2124,12 +2163,14 @@ window.__startEarth2D();
              is still strong, and the square canvas would cut it into
              straight seams inside the viewport. The edge factor
              fades the glow to exactly 0 before the framebuffer's
-             edge (r = 0.495 of the half-size) at any camera
-             distance, so the canvas box's edges can never print on
-             screen; at rest the shell sits at r <= 0.41 and the fade
-             never touches it. uSize is the drawing-buffer size in
+             edge at any camera distance; the fade band was widened
+             from 0.44–0.495 to 0.40–0.46 (with the 2D halo's clamp,
+             after the progress-0.949 mid-dive screenshot) so the
+             glow is fully out with a 0.04 margin to spare, and at
+             rest the shell sits at r <= 0.39 so the fade never
+             touches it. uSize is the drawing-buffer size in
              device px, refreshed every frame in animate(). */
-          fragmentShader:'varying vec3 vN; uniform float uSize; uniform float uGain; void main(){ float f=pow(max(0.0,0.66-dot(vN,vec3(0.0,0.0,1.0))),3.0); float r=length(gl_FragCoord.xy/uSize-0.5); float edge=1.0-smoothstep(0.44,0.495,r); gl_FragColor=vec4(vec3(0.55,0.70,1.0)*f*0.9*edge*uGain,1.0); }',
+          fragmentShader:'varying vec3 vN; uniform float uSize; uniform float uGain; void main(){ float f=pow(max(0.0,0.66-dot(vN,vec3(0.0,0.0,1.0))),3.0); float r=length(gl_FragCoord.xy/uSize-0.5); float edge=1.0-smoothstep(0.40,0.46,r); gl_FragColor=vec4(vec3(0.55,0.70,1.0)*f*0.9*edge*uGain,1.0); }',
           side:THREE.BackSide, blending:THREE.AdditiveBlending, transparent:true, depthWrite:false
         })
       );
