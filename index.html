@@ -1,11 +1,12 @@
 <!doctype html>
 <!--
   DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
-  Push these 10 files, byte for byte, replacing the old landing page's index.html:
-    index.html                        159,515 bytes (this file, manifest comment included)
+  Push these 11 files, byte for byte, replacing the old landing page's index.html:
+    index.html                        140,932 bytes (this file, manifest comment included)
+    sw.js                               2,122 bytes (site root — Earth cache service worker; index.html registers it)
     assets/earth_0_zhtn.glb        23,342,728 bytes
-    assets/earth_clouds_4096.png    9,848,258 bytes
-    assets/earth_day_color_4096.jpg 2,693,045 bytes
+    assets/earth_clouds_4096.png    9,848,258 bytes (no longer fetched by the page — the Canvas 2D fallback globe was removed; the GLB embeds its own maps. Kept in the repo, harmless)
+    assets/earth_day_color_4096.jpg 2,693,045 bytes (no longer fetched by the page — same removal as above. Kept in the repo, harmless)
     assets/three.min.js               865,452 bytes
     assets/ladder-star.png             90,703 bytes
     assets/ladder-star-alpha.png       60,365 bytes
@@ -22,6 +23,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="dark light" />
 <meta name="description" content="Ladder is the decentralized exchange on Elysium — Kinetiq's Arbitrum Orbit L2 for the Hyperliquid ecosystem. Swap, provide liquidity, launch tokens and climb, rung by rung." />
+<!-- start the 23 MB Earth model downloading immediately, in parallel
+     with parsing, so the blue Earth is ready as early as the network
+     allows; on repeat visits the service worker (sw.js) serves it
+     from Cache Storage instead -->
+<link rel="preload" as="fetch" href="assets/earth_0_zhtn.glb" crossorigin />
+<style>
+/* ============ BOOT LOADER — critical styles, in force before first
+   paint: the overlay is never seen unstyled. Black, monochrome, the
+   hero's own ring system geometry (centred at 50% / 46%, the same
+   min(118vmin,980px) box) so boot and hero share one scene. ============ */
+html.booting{overflow:hidden}
+html.booting body{overflow:hidden}
+.boot{position:fixed;inset:0;z-index:9999;background:#000;color:#f4f4f4;transition:background-color .8s ease}
+.boot.boot-out{background:rgba(0,0,0,0)}
+.boot-rings{position:absolute;left:50%;top:46%;width:min(118vmin,980px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;transition:opacity .5s ease .35s}
+.boot.boot-out .boot-rings{opacity:0}
+.boot-rings svg{display:block;width:100%;height:100%;overflow:visible}
+.boot-ring{fill:none;stroke:rgba(235,235,235,.30);stroke-width:1;vector-effect:non-scaling-stroke;stroke-dasharray:100;stroke-dashoffset:100;animation:bootDraw .9s cubic-bezier(.6,0,.2,1) forwards}
+.boot-ring.d2{animation-delay:.18s}
+.boot-ring.d3{animation-delay:.36s}
+.boot-ring.d4{animation-delay:.54s}
+.boot-ring.d5{animation-delay:.72s;stroke-width:1.5}
+.boot-accent{fill:none;stroke:rgba(235,235,235,.6);stroke-width:1;vector-effect:non-scaling-stroke;stroke-dasharray:16 84;opacity:0;animation:bootAccentIn .6s ease .95s forwards}
+.boot-accent.spin-a{transform-box:view-box;transform-origin:center;animation:bootAccentIn .6s ease .95s forwards,bootSpin 46s linear infinite}
+.boot-accent.spin-b{transform-box:view-box;transform-origin:center;stroke-dashoffset:-50;animation:bootAccentIn .6s ease .95s forwards,bootSpinRev 70s linear infinite}
+.boot-arc{fill:none;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100}
+.boot-centre{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;pointer-events:none}
+.boot-star{width:min(11vmin,104px);height:auto;animation:bootPulse 3.4s ease-in-out infinite}
+.boot-label{margin-top:1.1rem;font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:rgba(244,244,244,.55)}
+.boot-pct{margin-top:.45rem;font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;font-weight:700;letter-spacing:.18em;color:#fff;font-variant-numeric:tabular-nums}
+.boot-fade{transition:opacity .45s ease}
+.boot.boot-out .boot-fade{opacity:0}
+@keyframes bootDraw{to{stroke-dashoffset:0}}
+@keyframes bootAccentIn{to{opacity:1}}
+@keyframes bootSpin{to{transform:rotate(360deg)}}
+@keyframes bootSpinRev{to{transform:rotate(-360deg)}}
+@keyframes bootPulse{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.045);opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .boot-ring{animation:none;stroke-dashoffset:0}
+  .boot-accent{animation:none;opacity:1}
+  .boot-star{animation:none}
+}
+</style>
 <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
 <title>Ladder — The DEX on Elysium</title>
@@ -161,21 +205,29 @@ section{position:relative}
 @keyframes spin{to{transform:rotate(360deg)}}
 .sing-stars{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 /* singularity body — the Earth globe (or, as a last-resort fallback, the
-   Ladder star mark). While the globe loads the hero stays dark: only the
-   black shadow disc, the rings and the starfield show. The star logo is
-   hidden from the first paint and only returns if the globe has failed
-   outright (the watchdog script adds .globe-failed after ~5 s with no
-   live globe), so a refresh never flashes the logo while Earth loads. */
+   Ladder star mark). There is exactly ONE Earth on this page: the GLB
+   model. While it loads the hero stays dark: only the placeholder
+   shadow disc — a plain dark silhouette at the Earth's exact settled
+   footprint, no texture, no continents — the rings and the starfield
+   show, and the verified model fades in over that disc, once. The star
+   logo is hidden from the first paint and only returns on a GENUINE
+   failure (.globe-failed, added by the GLB script itself when WebGL or
+   the load actually fails, or by the watchdog if the boot code never
+   ran), so a refresh never flashes the logo — or any second Earth —
+   while the real Earth is still loading. */
 .sing-body{position:absolute;left:50%;top:46%;width:min(57vmin,540px);aspect-ratio:1;transform:translate(-50%,-50%);will-change:transform;pointer-events:none}
-.sing-shadow{position:absolute;left:50%;top:50%;width:64%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,#010101 66%,rgba(1,1,1,.9) 82%,rgba(1,1,1,0) 100%)}
+.sing-shadow{position:absolute;left:50%;top:50%;width:65%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,#010101 66%,rgba(1,1,1,.9) 82%,rgba(1,1,1,0) 100%)}
 .sing-logo{display:none;position:absolute;left:50%;top:50%;width:57%;transform:translate(-50%,-50%);filter:drop-shadow(0 0 16px rgba(140,140,140,.45));animation:logofloat 7s ease-in-out infinite}
 .sing-body.globe-failed .sing-logo{display:block}
 /* Earth globe — replaces the singularity core once its texture is drawn */
-.sing-globe{position:absolute;inset:0;pointer-events:auto;cursor:grab;touch-action:pan-y}
+.sing-globe{position:absolute;inset:0;z-index:1;pointer-events:auto;cursor:grab;touch-action:pan-y}
 .sing-globe.dragging{cursor:grabbing}
 .sing-globe canvas{display:block;position:absolute;inset:0}
-/* once the globe is live, the old singularity's core pieces go: the black
-   shadow disc and the star logo. The singularity's own light pieces —
+/* once the globe is live, the old singularity's core pieces go: the star
+   logo at once (.has-globe), and the placeholder shadow disc once the
+   Earth has fully faded in over it (.globe-in) — until then the disc is
+   the hero's placeholder Earth silhouette, sized to the model's exact
+   65% footprint so the fade swaps nothing but the surface itself. The singularity's own light pieces —
    the photon ring, the accretion light band, the halo and the rotating
    arc — stay removed: they were scroll-scaled overlays and kept blowing
    up into a parked white slab mid-dive. What the globe DOES carry now
@@ -185,7 +237,8 @@ section{position:relative}
    read sharp). It is part of the Earth, not a dive overlay — at rest
    and through the whole zoom the coloured Earth with its atmosphere
    is the only thing on screen. */
-.sing-body.has-globe .sing-shadow,.sing-body.has-globe .sing-logo{display:none}
+.sing-body.globe-in .sing-shadow{display:none}
+.sing-body.has-globe .sing-logo{display:none}
 @keyframes logofloat{0%,100%{transform:translate(-50%,-51%)}50%{transform:translate(-50%,-49%)}}
 .sing-scan{position:absolute;inset:0;pointer-events:none;opacity:.5;background:repeating-linear-gradient(180deg,rgba(120,120,120,.06) 0,rgba(120,120,120,.06) 1px,transparent 1px,transparent 3px);z-index:5}
 .sing-grain{position:absolute;inset:-60%;pointer-events:none;opacity:.05;z-index:6;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");background-size:160px 160px;animation:grain .7s steps(4) infinite}
@@ -321,7 +374,6 @@ section{position:relative}
 .svc-off{cursor:not-allowed}
 .svc-off:hover{border-color:var(--line);transform:none;box-shadow:var(--shadow-rest)}
 
-
 /* ============ COMPARE TABLE (Orizon sing-table) ============ */
 .compare{padding:6rem 0;background:var(--bg)}
 .cmp-wrap{margin-top:3rem;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card);box-shadow:var(--shadow-rest)}
@@ -333,7 +385,6 @@ table.cmp td.hl{background:var(--brand-soft);color:var(--brand-ink);font-weight:
 table.cmp tbody th,table.cmp tbody td:first-child{font-weight:500}
 table.cmp tr:last-child td{border-bottom:none}
 .yes{color:var(--brand-ink);font-weight:700} .no{color:var(--faint)} .mid{color:var(--muted);font-weight:600}
-
 
 /* ============ MAINNET CLOCK ============ */
 .clock{background:var(--bg-soft);border-block:1px solid var(--line-soft);padding:6rem 0;overflow:hidden}
@@ -559,6 +610,87 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 </style>
 </head>
 <body>
+
+<!-- ================= BOOT LOADER =================
+     Orbit rings + the Ladder star, drawn over black from the first
+     paint. The rings use the hero ring system's exact geometry and
+     insets (0 / 11 / 22 / 33 / 44%), so when the Earth is live the
+     star, label, percentage and progress arc fade out, the overlay
+     lifts, and these rings crossfade into the hero's identical rings
+     with the Earth fading in at their centre — one continuous scene,
+     no jump, and the hero is never seen without its Earth. -->
+<div class="boot" id="boot" role="status" aria-label="Loading Ladder">
+  <div class="boot-rings" aria-hidden="true">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <circle class="boot-ring" cx="50" cy="50" r="49.6" pathLength="100"/>
+      <circle class="boot-ring d2" cx="50" cy="50" r="39" pathLength="100"/>
+      <circle class="boot-ring d3" cx="50" cy="50" r="28" pathLength="100"/>
+      <circle class="boot-ring d4" cx="50" cy="50" r="17" pathLength="100"/>
+      <circle class="boot-ring d5" cx="50" cy="50" r="6" pathLength="100"/>
+      <g transform="rotate(-90 50 50)">
+        <circle class="boot-accent spin-a" cx="50" cy="50" r="39" pathLength="100"/>
+        <circle class="boot-accent spin-b" cx="50" cy="50" r="17" pathLength="100"/>
+        <circle class="boot-arc boot-fade" id="bootArc" cx="50" cy="50" r="46.5" pathLength="100"/>
+      </g>
+    </svg>
+  </div>
+  <div class="boot-centre boot-fade">
+    <img class="boot-star" src="assets/ladder-star-alpha.png" alt="" />
+    <div class="boot-label">Loading Earth</div>
+    <div class="boot-pct" id="bootPct">0%</div>
+  </div>
+</div>
+<script>
+/* ---------- Boot loader controller ----------
+   Runs immediately after the overlay markup: locks scroll, receives
+   the GLB loader's REAL byte progress (window.__bootSetProgress,
+   wired in the GLB script) and drives the arc + percentage, and owns
+   the exit. The exit is gated on the Earth being fully live
+   (window.__earth3DLive — model loaded, first frame rendered,
+   pixel-verified) or genuinely failed (window.__earth3DFailed),
+   never shows for less than ~600 ms (cached visits must not flash),
+   and a ~25 s safety exit guarantees the page is never trapped
+   behind the loader — the hero's placeholder disc holds the Earth
+   meanwhile and the model keeps retrying in the background. The
+   deterministic rotation timeline runs from navigation start
+   regardless, so the Earth revealed is at its shared-timeline
+   orientation. */
+(function(){
+  var root=document.documentElement;
+  root.classList.add('booting');
+  var overlay=document.getElementById('boot');
+  if(!overlay)return;
+  var arc=document.getElementById('bootArc');
+  var pct=document.getElementById('bootPct');
+  var t0=performance.now(), shown=0, done=false;
+  window.__bootSetProgress=function(f){
+    if(done||typeof f!=='number'||!(f>0))return;
+    if(f>1)f=1;
+    if(f<=shown)return; /* monotonic: the arc never runs backwards, even across load retries */
+    shown=f;
+    if(arc)arc.style.strokeDashoffset=(100*(1-f)).toFixed(1);
+    if(pct)pct.textContent=Math.round(f*100)+'%';
+  };
+  function exit(complete){
+    if(done)return; done=true;
+    if(complete)window.__bootSetProgress(1);
+    overlay.classList.add('boot-out');
+    setTimeout(function(){
+      root.classList.remove('booting');
+      if(overlay.parentNode)overlay.parentNode.removeChild(overlay);
+    },950);
+  }
+  window.__bootExit=exit;
+  var iv=setInterval(function(){
+    if(window.__earth3DLive||window.__earth3DFailed){
+      clearInterval(iv);
+      var wait=600-(performance.now()-t0);
+      setTimeout(function(){ exit(!!window.__earth3DLive); },wait>0?wait:0);
+    }
+  },100);
+  setTimeout(function(){ clearInterval(iv); exit(false); },25000);
+})();
+</script>
 
 <!-- ================= TOP NAV ================= -->
 <header class="topnav">
@@ -1164,21 +1296,12 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
           disc was still only ~1640px across there, so its left and
           right limbs sat visibly inside the frame ("kepotong"); at
           x9.6 the disc overflows a 16:9 frame on every edge well
-          before the final beat. The 2D canvas globe —
-          the renderer the user's own GPU actually shows, its WebGL
-          having rendered black there — takes the SAME split: its
-          projection radius grows with the dolly, so every output
-          pixel keeps sampling the 4096px map at its own true
-          surface point. (It used to take the whole x6.5 through
-          CSS alone: a <=1024px bitmap stretched over the screen,
-          which is exactly the blocky mosaic the user kept
-          screenshotting at the dive's peak, however high the
-          source texture's resolution was.);
+          before the final beat.;
        3) the rings track the product of both parts, so the ring
           system sweeps past the frame together with the globe;
        4) the zoom still carries ANIMATION inside it: the Earth's
           spin (and its faster cloud drift) speeds up with depth via
-          window.__diveSpin, read by both globe renderers.
+          window.__diveSpin, read by the globe renderer.
        At the peak the disc is ~x12.6 its resting size — its limb is
        beyond every edge of the frame and only surface streams past,
        for the final beat of scroll, before the hero hands off.
@@ -1268,7 +1391,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     }
     /* no dive treatment: the globe's colours and shading stay exactly
        as rendered at every point of the zoom — nothing is darkened,
-       brightened, rimmed or overlaid, in either globe mode. Scrolling
+       brightened, rimmed or overlaid. Scrolling
        back up simply reverses the zoom. */
   }
   requestAnimationFrame(glide);
@@ -1461,482 +1584,25 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 <script>
 /* ---------- Hero loading watchdog ----------
    The hero star logo starts hidden (CSS: .sing-logo{display:none}) so a
-   refresh shows only the dark hero — shadow disc, rings, starfield —
-   until the Earth globe draws its first frame and adds .has-globe. If
-   no globe (2D or GLB) is live after ~5 s, the globe has failed
-   outright: reveal the star mark as the fallback so the hero is never
-   left an empty dark disc. If a globe comes live later, .has-globe
-   hides the logo again. */
+   refresh shows only the dark hero — placeholder disc, rings,
+   starfield — until the one Earth this page has (the GLB model) is
+   verified live and adds .has-globe. The logo is the last-resort
+   fallback for a GENUINE failure only: the GLB script adds
+   .globe-failed itself the moment WebGL or the model load actually
+   fails, and this watchdog covers the one case that script cannot —
+   the GLB boot code never running at all. A slow model download is
+   NOT a failure: however long the 23 MB file takes, the placeholder
+   disc simply stays until the Earth fades in over it, so a refresh
+   never flashes the logo (and never shows any second Earth) while
+   the real one is still on its way. If the Earth comes live after a
+   failure was declared, .has-globe hides the logo again. */
 (function(){
   setTimeout(function(){
-    if(window.__earth2DLive||window.__earth3DLive)return;
+    if(window.__earth3DLive||window.__earth3DStarted)return;
     var body=document.querySelector('.sing-body');
     if(body&&!body.classList.contains('has-globe'))body.classList.add('globe-failed');
   },5000);
 })();
-</script>
-
-<script>
-/* ---------- Hero Earth — 2D canvas globe (first paint + safety net) ----------
-   This renderer starts on its own, immediately: it is the hero's fast
-   first paint AND the safety net for the GLB globe in the script
-   below it. Its day texture is the colour map extracted from the
-   user's own GLB file, so the Earth it draws carries the model's
-   original colours, and only that ~2.7 MB texture has to arrive
-   before the first frame — the hero never sits on the bare CSS logo
-   while the 23 MB model downloads. Once the model has loaded and
-   passed its pixel read-back check, the GLB script calls
-   window.__stopEarth2D() and its WebGL canvas swaps in over this
-   one; if WebGL is unavailable, the model fails to load, or it
-   renders black (the failure mode that killed four WebGL rounds on
-   the user's real GPU), the stop is never called and this proven
-   renderer simply stays. It is drawn with plain Canvas 2D, NOT
-   WebGL: four rounds of
-   WebGL builds rendered a perfect Earth in the desktop audit yet a solid
-   black disc on the user's real GPU, while this page's 2D starfield
-   always rendered on the same machine. The projection is a TRUE
-   orthographic one, computed per pixel into ImageData: each screen
-   pixel's unit-sphere direction gives its exact latitude/longitude, so
-   continents keep their shape everywhere on the disc. (An earlier
-   column-slice shortcut held longitude constant per column and smeared
-   everything away from the equator into wavy streaks.) Rotation is a
-   horizontal offset into the precomputed maps, so spinning and dragging
-   stay smooth; the maps rebuild only when the size changes or the
-   drag-pitch moves. 'has-globe' (which hides the CSS singularity
-   fallback) is added only after the first frame has actually been
-   drawn. While it loads, the hero stays dark — the star logo stays
-   hidden — and only the watchdog above brings the logo back if no
-   globe is live after ~5 s. */
-window.__startEarth2D=function(){
-  "use strict";
-  if(window.__earth2DStarted)return;
-  window.__earth2DStarted=true;
-  var container=document.getElementById('singGlobe');
-  var body=document.querySelector('.sing-body');
-  if(!container||!body)return;
-  var reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  var cv=document.createElement('canvas');
-  cv.style.display='block';
-  cv.style.width='100%';
-  cv.style.height='100%';
-  container.appendChild(cv);
-  var ctx=cv.getContext('2d');
-  if(!ctx)return;
-  /* the GLB globe calls this once it has verified itself, to swap
-     its WebGL canvas in over this one */
-  var stopped=false;
-  window.__stopEarth2D=function(){
-    stopped=true;
-    if(cv.parentNode)cv.parentNode.removeChild(cv);
-  };
-
-  /* ---------- textures, sampled as raw pixels ---------- */
-  var TW=4096, TH=2048; /* sample the day map at the GLB's full native
-     4096x2048 — the earlier web copy had every map halved to 2048px,
-     which is exactly what made this globe read blurry ("burem") at
-     dive depth; the user asked for the full resolution back, no
-     compression, so both fallback textures below are byte-for-byte
-     extractions of the original model's own maps */
-  var dayData=null, cldData=null;
-  var cldT0=-1; /* when the cloud map landed — its blend fades in from there (see animate) */
-  function texData(img){
-    /* if a device refuses a 4096-wide readback canvas, retry once at
-       half size rather than leaving the globe unpainted */
-    for(;;){
-      try{
-        var c=document.createElement('canvas'); c.width=TW; c.height=TH;
-        var g=c.getContext('2d');
-        g.drawImage(img,0,0,TW,TH);
-        var d=g.getImageData(0,0,TW,TH).data;
-        if(d&&d.length===TW*TH*4)return d;
-      }catch(e){}
-      if(TW<=2048)return null;
-      TW=2048; TH=1024;
-    }
-  }
-  var dayImg=new Image(), cloudsImg=new Image();
-  dayImg.onload=function(){
-    dayData=texData(dayImg);
-    /* the sampling size (TW/TH) is now locked by the day map; the
-       cloud map, when it is eventually requested, samples at the
-       same size, so both pixel arrays always share one TW/TH */
-  };
-  /* on error dayData stays null; the watchdog reveals the star-logo fallback */
-  cloudsImg.onload=function(){ cldData=texData(cloudsImg); if(cldData)cldT0=performance.now(); };
-  dayImg.src='assets/earth_day_color_4096.jpg'; /* the GLB file's own colour map, full size */
-
-  /* ---------- cloud map: DEFERRED download ----------
-     The cloud map is 9.8 MB — the second-heaviest file on the page —
-     and it only ever decorates THIS fallback globe. It used to start
-     downloading the moment the day map landed, on every load: it
-     fought the 23 MB GLB for bandwidth (slowing the model, so the
-     verified handoff landed at a different, later second on every
-     refresh), and its own arrival second — which anchors the cloud
-     fade-in — jittered with the contention, so the cloud pattern the
-     user saw differed from refresh to refresh. Now it is requested
-     only when this globe turns out to be the one staying on screen:
-     the GLB script calls window.__startEarthClouds() from its
-     fallback path, and the fixed 20 s timer below covers a GLB load
-     that hangs or runs very long. On the normal path the model is
-     live within seconds, the timer sees __earth3DLive set, and the
-     9.8 MB is never downloaded at all — the page is lighter, the GLB
-     arrives sooner, and the swap lands on its fixed timeline mark. */
-  var cloudsStarted=false;
-  window.__startEarthClouds=function(){
-    if(cloudsStarted||cldData)return;
-    cloudsStarted=true;
-    cloudsImg.src='assets/earth_clouds_4096.png';
-  };
-  setTimeout(function(){
-    if(!window.__earth3DLive)window.__startEarthClouds();
-  },20000);
-
-  /* ---------- rotation state ----------
-     rot   = longitude (rad) facing the viewer at disc centre
-     pitch = latitude tilt (rad) from vertical drags
-     The phase is a pure function of the navigation timeline (rAF
-     timestamps are milliseconds since navigation start): rot and
-     rotC are recomputed from scratch every frame as base(now) +
-     adjustment, where the adjustment carries only what the timeline
-     cannot know — drag deltas, inertia, and the dive's extra spin.
-     Nothing in the phase waits for a texture: the 2.7 MB day map and
-     the 9.8 MB cloud map arrive at a different second on every
-     connection, and when the spin was instead accumulated from
-     "when the data landed" (all builds up to the phase-locked
-     handoff), each refresh opened on whatever face that second
-     implied — seconds of load jitter became whole continents of
-     difference, main-thread stalls (the 23 MB GLB parse, the 4096px
-     readback) silently ate capped-dt phase, and the phase-locked
-     GLB handoff faithfully mirrored the wrong face. Now, at any
-     given moment after navigation, every load shows the same face
-     and the same cloud pattern, however the downloads happened to
-     go — the spin the user sees is a clock, not a race. */
-  var TAU=6.2831853;
-  var ROT0=0.30; /* open on Africa & the Sahara — the brightest face first */
-  var ROTC0=1.10;
-  var SURF=reduceMotion?0:0.08;        /* surface spin, rad/s */
-  var CLD=0.088*(reduceMotion?0.25:1); /* clouds drift a touch faster */
-  var rot=ROT0, rotC=ROTC0, pitch=0, velRot=0, velPitch=0;
-  var rotAdj=0, rotCAdj=0; /* drag / inertia / dive-speedup deltas on top of the timeline phase */
-  /* live rotation phase, published every frame for the GLB globe:
-     until its handoff completes, the model mirrors this globe's rot
-     and pitch exactly, so the renderer swap can never jump the face
-     no matter when the 23 MB model happens to finish loading (the
-     refresh-consistency fix — see the GLB script) */
-  var phaseObj={rot:rot,pitch:pitch,rotC:rotC};
-  window.__earthPhase=phaseObj;
-  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
-
-  /* ---------- drag to rotate (wheel stays with the page scroll) ---------- */
-  var dragging=false,lastX=0,lastY=0;
-  container.addEventListener('pointerdown',function(e){
-    dragging=true; lastX=e.clientX; lastY=e.clientY;
-    velRot=0; velPitch=0;
-    container.classList.add('dragging');
-    try{ container.setPointerCapture(e.pointerId); }catch(err){}
-    if(e.pointerType==='mouse')e.preventDefault();
-  });
-  container.addEventListener('pointermove',function(e){
-    if(!dragging)return;
-    var dx=e.clientX-lastX, dy=e.clientY-lastY;
-    lastX=e.clientX; lastY=e.clientY;
-    rotAdj-=dx*0.0052; /* surface follows the pointer */
-    pitch=clamp(pitch+dy*0.003,-0.55,0.55);
-    velRot=-dx*0.0052*60; velPitch=dy*0.003*60;
-  });
-  function endDrag(){
-    dragging=false;
-    container.classList.remove('dragging');
-  }
-  container.addEventListener('pointerup',endDrag);
-  container.addEventListener('pointercancel',endDrag);
-
-  /* ---------- projection maps ----------
-     For every pixel inside the disc: which texture row it samples, its
-     texture column at rotation 0, its limb-shading multiplier and its
-     alpha (feathered at the rim). Built for the current size, the
-     quantised pitch and the quantised dive dolly; the fixed -14°
-     axial tilt is baked in.
-     The dolly is this renderer's camera move, the counterpart of the
-     WebGL renderer's: the hero engine hands it window.__dollyMag
-     (x1 -> x2.90) and the projection radius grows by that factor, so
-     as the dive deepens each output pixel keeps sampling the 4096px
-     map at its own true surface point. Without it the whole dive was
-     CSS magnification of this <=1024px canvas (x6.5), and the peak
-     frame was a stretched bitmap no source resolution could save —
-     the blockiness in the user's screenshots. The dolly is quantised
-     to x1.18 steps (a map rebuild is a full trig pass); animate()
-     covers the sub-step remainder with an equally small CSS scale on
-     the canvas element itself (never more than x1.18 — far below
-     where bitmap stretch reads as blur), so the displayed zoom stays
-     continuous while rebuilds stay rare. The maps live in
-     preallocated typed arrays: at dive depth the disc covers the
-     whole canvas (~1M pixels), and the old push-array build was
-     several times slower than the typed pass. */
-  var S=0;                 /* internal render size (square, device px) */
-  var pixPos=null, pixRow=null, pixCol=null, pixShade=null, pixAlpha=null, pixCount=0;
-  var builtPitch=null, builtZoom=null, imgOut=null, buf=null;
-  var TILT=0.244;          /* 14° — inverse-rotated when sampling */
-  var ZSTEP=1.18;          /* dolly quantisation: rebuilds per full dive ≈ 5 */
-  function zoomStep(mag){  /* largest ZSTEP^k <= mag */
-    if(mag<=1.001)return 1;
-    return Math.pow(ZSTEP,Math.floor(Math.log(mag)/Math.log(ZSTEP)));
-  }
-  function buildMaps(Z){
-    var R=S*0.325*Z, cx=S/2, cy=S/2;
-    if(!pixPos||pixPos.length<S*S){
-      pixPos=new Uint32Array(S*S); pixRow=new Uint16Array(S*S); pixCol=new Uint16Array(S*S);
-      pixShade=new Float32Array(S*S); pixAlpha=new Uint8Array(S*S);
-    }
-    var cosP=Math.cos(pitch), sinP=Math.sin(pitch);
-    var cosT=Math.cos(TILT), sinT=Math.sin(TILT);
-    /* texture dims hoisted to locals and the clamps inlined: at dive
-       depth this loop runs over ~1M pixels, and per-pixel function
-       calls were the difference between a ~30-80ms build and a
-       multi-hundred-ms one in benchmarking */
-    var TWl=TW, THl=TH, invTau=1/TAU;
-    var n=0;
-    var xa=Math.max(0,Math.floor(cx-R)), xb=Math.min(S-1,Math.ceil(cx+R));
-    var ya=Math.max(0,Math.floor(cy-R)), yb=Math.min(S-1,Math.ceil(cy+R));
-    for(var py=ya;py<=yb;py++){
-      for(var px=xa;px<=xb;px++){
-        var dx=px+0.5-cx, dy=py+0.5-cy;
-        var nx=dx/R, ny=-dy/R;
-        var d2=nx*nx+ny*ny;
-        if(d2>1)continue;
-        var nz=Math.sqrt(1-d2);
-        /* inverse pitch (about X), then inverse tilt (about Z) */
-        var y1=ny*cosP+nz*sinP, z1=-ny*sinP+nz*cosP;
-        var xg=nx*cosT-y1*sinT, yg=nx*sinT+y1*cosT;
-        var lat=Math.asin(yg<-1?-1:(yg>1?1:yg));
-        var lon=Math.atan2(xg,z1);
-        var v=Math.floor((0.5-lat/3.14159265)*THl);
-        var uf=lon*invTau+0.5; uf-=Math.floor(uf);
-        var u=Math.floor(uf*TWl);
-        /* limb shading: clear to 62% of the radius, then a gentle fall */
-        var d=Math.sqrt(d2), a;
-        if(d<0.62)a=0;
-        else if(d<0.85)a=0.16*(d-0.62)/0.23;
-        else a=0.16+0.29*(d-0.85)/0.15;
-        pixPos[n]=py*S+px;
-        pixRow[n]=v<0?0:(v>=THl?THl-1:v);
-        pixCol[n]=u<0?0:(u>=TWl?TWl-1:u);
-        pixShade[n]=1-a;
-        pixAlpha[n]=d>0.985?Math.round(255*(1-d)/0.015):255;
-        n++;
-      }
-    }
-    pixCount=n;
-    builtPitch=Math.round(pitch/0.01)*0.01;
-    builtZoom=Z;
-    imgOut=ctx.createImageData(S,S);
-    buf=imgOut.data;
-  }
-
-  /* ---------- sizing ----------
-     baseS is the resting internal size: the container's device size,
-     capped at 1024 (the old flat cap — on its own it was also the
-     dive's ceiling, so at peak a <=1024px bitmap was being displayed
-     ~3400px wide and read as blur no matter how high the source
-     texture's resolution was). During the dive, animate() grows S in
-     coarse x1.45 steps with the TOTAL displayed scale (globe-box CSS
-     scale x this canvas's own dive scale), up to SCAP, so the bitmap
-     the browser stretches stays close to the size it is shown at;
-     the projection maps rebuild on each step, keyed like the dolly
-     steps. At rest S falls back to baseS, so idle cost is unchanged. */
-  var baseS=0;
-  var SCAP=window.innerWidth<760?1664:2048;
-  function resize(){
-    var w=container.clientWidth, h=container.clientHeight;
-    if(!w||!h)return;
-    var dpr=Math.min(window.devicePixelRatio||1,2);
-    /* render at the displayed device size (old cap was 680px, so on a
-       retina phone the canvas was upscaled ~1.6x before the dive even
-       started — the other half of the blur) */
-    var s=Math.max(160,Math.min(1024,Math.round(Math.min(w,h)*dpr)));
-    baseS=s;
-    if(s!==S){ S=s; cv.width=S; cv.height=S; builtPitch=null; builtZoom=null; }
-  }
-  var rsT=null;
-  window.addEventListener('resize',function(){ clearTimeout(rsT); rsT=setTimeout(resize,150); });
-  window.addEventListener('load',resize);
-  resize();
-
-  /* ---------- render only while the hero is on screen ---------- */
-  var visible=true;
-  if('IntersectionObserver' in window){
-    new IntersectionObserver(function(en){ visible=en[0].isIntersecting; },{threshold:0.02})
-      .observe(document.querySelector('.sing'));
-  }
-
-  var announced=false;
-  var lastNow=performance.now();
-  function animate(now){
-    if(stopped)return; /* the GLB globe took over */
-    requestAnimationFrame(animate);
-    var dt=Math.min((now-lastNow)/1000,0.05);
-    lastNow=now;
-    /* phase first, pixels second: the rotation state is derived and
-       published on EVERY frame from the very first one — before the
-       day map has arrived, and while the hero is off screen —
-       because it comes from the rAF timestamp (the navigation
-       timeline), not from accumulation while drawing. The GLB globe
-       mirrors this phase until its handoff, so it inherits the same
-       refresh determinism. */
-    var ds=(window.__diveSpin||1);
-    if(dragging){
-      rotAdj-=SURF*dt*ds; /* hold the surface under the pointer: cancel this frame's timeline advance, dive speedup included */
-    }else{
-      rotAdj+=velRot*dt;
-      if(!reduceMotion)rotAdj-=SURF*dt*(ds-1); /* the dive's extra spin, beyond the timeline's base rate */
-      pitch=clamp(pitch+velPitch*dt,-0.55,0.55);
-      velRot*=Math.pow(0.12,dt);
-      velPitch*=Math.pow(0.12,dt);
-      if(Math.abs(velRot)<0.0005)velRot=0;
-      if(Math.abs(velPitch)<0.0005)velPitch=0;
-    }
-    rotCAdj-=CLD*dt*(ds-1); /* the clouds' share of the dive's extra spin */
-    var tS=now/1000;
-    rot=ROT0-SURF*tS+rotAdj;
-    rotC=ROTC0-CLD*tS+rotCAdj;
-    phaseObj.rot=rot; phaseObj.pitch=pitch; phaseObj.rotC=rotC; /* the GLB globe phase-locks to this — surface AND clouds — until its handoff completes */
-    if(!visible||!dayData)return;
-    if(!S)resize();
-    if(!S)return;
-    /* the dive dolly, quantised: rebuild the projection only when the
-       quantised depth changes, and let a CSS scale on the canvas itself
-       carry the remainder so the zoom the user sees is still
-       continuous (this transform is also what the WebGL swap removes
-       wholesale when it takes over — it lives on this canvas element
-       only). The projection factor is CAPPED at 1.39: past that, the
-       disc radius (S*0.325*zq) would pass half the canvas and the
-       square canvas would clip the disc FLAT along its own edges —
-       and mid-dive that box still sits inside the viewport, so the
-       Earth showed straight cut edges left and right (the user's
-       "ko motong gni" screenshot at progress 0.961). With the cap the
-       disc always stays a full circle inside the canvas, the canvas
-       scale (mag/zq, up to ~x2.09) carries the rest of the dolly, and
-       the canvas box outgrows the viewport well before the limb can
-       reach its edges — the limb leaves through the screen edges as a
-       curve, never as a cut. */
-    var mag=window.__dollyMag||1;
-    var zq=zoomStep(mag);
-    if(zq>1.39)zq=1.39;
-    var trs='scale('+(mag/zq).toFixed(4)+')';
-    if(cv.style.transform!==trs)cv.style.transform=trs;
-    /* resolution follows the dive: grow the internal size with the
-       total displayed scale (box scale x canvas scale), in x1.45
-       steps so map rebuilds stay rare, capped at SCAP; scrolling
-       back up shrinks it again the same way */
-    if(baseS>0){
-      var tot=(window.__heroScale||1)*(mag/zq);
-      var wantS=baseS;
-      if(tot>1.02){
-        wantS=Math.min(SCAP,Math.round(baseS*Math.pow(1.45,Math.ceil(Math.log(tot)/Math.log(1.45)))));
-        if(wantS<baseS)wantS=baseS;
-      }
-      if(wantS!==S){ S=wantS; cv.width=S; cv.height=S; builtPitch=null; builtZoom=null; }
-    }
-    if(builtPitch===null||builtZoom!==zq||Math.abs(Math.round(pitch/0.01)*0.01-builtPitch)>0.001)buildMaps(zq);
-
-    /* the 9.8 MB cloud map lands after the day map, at a different
-       moment on every connection: fade its blend in over ~1.4 s
-       instead of popping a whole cloud layer onto the disc mid-load.
-       The fade is anchored to the navigation timeline like the phase
-       itself — it starts at 2.5 s after navigation, or on arrival if
-       the map lands later than that (data cannot be shown before it
-       exists) — so on any connection fast enough to have the map by
-       then, the clouds materialise at the same second of every
-       refresh, in the same timeline-locked pattern positions */
-    var cldFade=cldData?(cldT0<0?1:Math.min(1,Math.max(0,(now-Math.max(cldT0,2500))/1400))):0;
-    buf.fill(0);
-    var du=((Math.round(rot/TAU*TW)%TW)+TW)%TW;
-    var duC=cldData?(((Math.round(rotC/TAU*TW)%TW)+TW)%TW):0;
-    var n=pixCount;
-    for(var i=0;i<n;i++){
-      var so=(pixRow[i]*TW+((pixCol[i]+du)&(TW-1)))*4;
-      var r=dayData[so], g=dayData[so+1], b=dayData[so+2];
-      if(cldData){
-        var co=(pixRow[i]*TW+((pixCol[i]+duC)&(TW-1)))*4;
-        var ca=cldData[co+3];
-        if(ca){
-          var af=ca*0.0019608*cldFade, ia=1-af; /* cloud alpha at half strength, faded in on arrival */
-          r=r*ia+cldData[co]*af;
-          g=g*ia+cldData[co+1]*af;
-          b=b*ia+cldData[co+2]*af;
-        }
-      }
-      var sh=pixShade[i], oo=pixPos[i]*4;
-      buf[oo]=r*sh; buf[oo+1]=g*sh; buf[oo+2]=b*sh; buf[oo+3]=pixAlpha[i];
-    }
-    ctx.putImageData(imgOut,0,0);
-
-    /* atmosphere — the Earth's own edge light, drawn tight against the
-       limb in the same pass as the surface (like the reference object's
-       bright rim, which is what makes its dark core read crisp). It is
-       locked to the disc's radius: it hugs the globe at rest, glides
-       and zooms with it, and leaves the frame together with the limb —
-       it is geometry on the object, never a scroll overlay, so it can
-       never blow up into a screen-filling band mid-dive. */
-    var RR=S*0.325*zq, ccx=S/2, ccy=S/2; /* the rim rides the same dolly as the surface, so it leaves the frame with the limb */
-    /* the halo's outer edge is clamped INSIDE the canvas, with its
-       alpha reaching exactly 0 there. The disc itself was already
-       capped safe (radius 0.452x the canvas at the dolly cap), but
-       the halo was not: at 1.18x the disc radius it reached 0.533x
-       the canvas — past the square canvas's straight edge — while
-       still ~13% opaque, so mid-dive, while the canvas box still sat
-       inside the viewport, the box cut the glow into two straight
-       vertical seams (the user's progress-0.941 screenshot, verified
-       by pixel measurement: hard brightness steps exactly at the
-       canvas box's left and right edges, symmetric about the disc's
-       centre). With the clamp, nothing this renderer draws is
-       non-transparent in the canvas's outer ring at any zoom level,
-       so the box's edges can never print on screen — the glow fades
-       out as a circle, and the only edges left are the limb's curve
-       and the screen's own. */
-    /* theme-aware: the rim and halo strengths are tuned for the black
-       hero. On the near-white light hero the full-strength pale-blue
-       glow blooms into a milky band around the disc, so in light mode
-       the halo eases off and the rim reads as a deeper blue line —
-       but the blue atmosphere light itself stays clearly visible (the
-       user likes it, including on refresh while this 2D globe is the
-       one on screen); only its bloom is tamed. Read per frame from
-       window.__ladderTheme (set by the daylight toggle), so flipping
-       the switch restyles the atmosphere live. Dark values unchanged. */
-    var ltMode=window.__ladderTheme==='light';
-    /* the clamp was widened from S*0.485 to S*0.46 (safety margin to
-       the canvas edge 0.015 -> 0.04 of the canvas) together with the
-       ring fade in the hero engine, after the progress-0.949 mid-dive
-       screenshot: in the 0.90–0.97 progress window the canvas box
-       still sits inside the viewport while its contents run closest
-       to the box's edges, so every guard gets extra room there. The
-       halo still fades to exactly 0 at haloOut — it just finishes
-       fading earlier, well inside the box. */
-    var haloOut=Math.min(RR*1.18,S*0.46);
-    var halo=ctx.createRadialGradient(ccx,ccy,RR*0.94,ccx,ccy,haloOut);
-    halo.addColorStop(0,'rgba(168,203,255,0)');
-    halo.addColorStop(0.62,'rgba(168,203,255,'+(ltMode?0.1:0.16)+')');
-    halo.addColorStop(1,'rgba(168,203,255,0)');
-    ctx.beginPath(); ctx.arc(ccx,ccy,haloOut,0,6.2832);
-    ctx.fillStyle=halo; ctx.fill();
-    ctx.beginPath(); ctx.arc(ccx,ccy,RR*0.996,0,6.2832);
-    ctx.strokeStyle=ltMode?'rgba(110,160,240,0.5)':'rgba(196,220,255,0.55)';
-    ctx.lineWidth=Math.max(1,S*0.0035);
-    ctx.stroke();
-    ctx.beginPath(); ctx.arc(ccx,ccy,RR*0.985,0,6.2832);
-    ctx.strokeStyle=ltMode?'rgba(100,150,230,0.16)':'rgba(150,185,240,0.22)';
-    ctx.lineWidth=Math.max(1,S*0.009);
-    ctx.stroke();
-
-    if(!announced){ announced=true; window.__earth2DLive=true; window.__earth2DLiveAt=now; body.classList.add('has-globe'); }
-  }
-  requestAnimationFrame(animate);
-};
-/* boot the 2D globe right away — fast first paint, proven on the
-   user's hardware; the GLB globe below swaps in over it once the
-   model has loaded and verified itself */
-window.__startEarth2D();
 </script>
 
 <script src="assets/three.min.js"></script>
@@ -1957,13 +1623,13 @@ window.__startEarth2D();
    for the original back). No colour conversion or material
    recolouring is applied either.
 
-   Interaction matches the globe it replaces: slow constant spin with
+   Interaction: slow constant spin with
    Africa opening centre-frame (verified from the model's own
    geometry: UV azimuth equals longitude with zero offset, so spin
-   0.30 rad centres ~17°E — the 2D globe's exact opening face), drag to rotate with
+   0.30 rad centres ~17°E), drag to rotate with
    inertia and clamped pitch, a fixed 14° axial lean, and the glide
-   choreography transforms .sing-body, which applies to this WebGL
-   canvas exactly as it did to the 2D one. The dive, though, is this
+   choreography transforms .sing-body, which carries this WebGL
+   canvas with it. The dive, though, is this
    renderer's own: the hero engine hands it window.__dollyMag and the
    camera physically flies toward the model (z 21.72 -> ~15.9 at the
    capped dolly, the canvas element's own scale carrying the rest) while
@@ -1976,17 +1642,27 @@ window.__startEarth2D();
    are what sweep past the frame as the globe flies by at the dive's
    peak.
 
-   Boot order, learned the hard way: the Canvas 2D globe above starts
-   immediately (its ~2.7 MB full-res day map, proven on the user's
-   real GPU), so the hero never sits on the CSS logo while this
-   23 MB model is still downloading. After the model's first frames render, the
+   Boot order — there is exactly ONE Earth on this page: this model.
+   An earlier build painted a fast Canvas 2D globe first and swapped
+   this model in over it whenever the 23 MB download happened to
+   finish; the two Earths look completely different (bright flat map
+   vs this dark, blue-rimmed model), so every refresh visibly changed
+   Earths mid-browsing, and the user ordered the flat one gone. Now,
+   while the model downloads, the hero shows the rings, the starfield
+   and a plain dark placeholder disc at the Earth's exact settled
+   footprint (65% of the hero box — the disc this camera frames) —
+   no texture, no continents, nothing that could be mistaken for a
+   different Earth. After the model's first frames render, the
    script reads pixels back from the disc area; only if they show a
-   real, lit Earth does the model swap in over the 2D globe. If
-   WebGL is unavailable, the model fails to load, or the pixels read
-   back uniformly dark, the attempt is torn down and the 2D globe
-   simply stays — the user sees a coloured Earth either way. */
+   real, lit Earth does the canvas fade in, once, over the
+   placeholder, and stay. If WebGL is unavailable, the model fails
+   to load, or the pixels read back uniformly dark, the attempt is
+   torn down and the placeholder disc simply stays, with the star
+   mark returning over it as the last-resort hero — the flat globe
+   is never resurrected. */
 (function(){
   "use strict";
+  window.__earth3DStarted=true; /* the watchdog's proof this boot code ran — a still-downloading model is not a failure */
   var container=document.getElementById('singGlobe');
   var body=document.querySelector('.sing-body');
   if(!container||!body)return;
@@ -1997,30 +1673,30 @@ window.__startEarth2D();
     if(settled)return; settled=true; dead=true;
     try{ if(renderer)renderer.dispose(); }catch(e){}
     if(cv&&cv.parentNode)cv.parentNode.removeChild(cv);
-    /* the 2D globe normally started on its own at boot and simply
-       stays; only start it here if that somehow did not happen */
-    if(!window.__earth2DStarted&&window.__startEarth2D)window.__startEarth2D();
-    /* the 2D globe is now the permanent hero, so it gets its cloud
-       layer after all — that download is deferred on the normal path
-       (see the 2D script) precisely so it never competes with this
-       model while the model still has a chance to load */
-    if(window.__startEarthClouds)window.__startEarthClouds();
+    /* a genuine failure — WebGL unavailable, the loader errored, or
+       the verified-dark pixel check below gave up. There is no
+       second Earth to fall back to, by the user's order: the dark
+       placeholder disc stays exactly where the Earth would have
+       sat, and the star mark returns over it (.globe-failed) as the
+       last-resort hero. */
+    window.__earth3DFailed=true;
+    body.classList.add('globe-failed');
   }
   /* load window for the full 23 MB model. It used to be a flat
      90 s kill: on a throttled connection the model can legitimately
      need longer than that, the timer fired fallback(), and because
      fallback marks the attempt settled/dead, the model was then
-     DISCARDED when it finally arrived — the load ended parked on
-     the 2D globe even though WebGL was perfectly healthy (one of
-     the two states in the user's refresh video). There is now NO
-     elapsed-time kill at all: while the loader has neither
-     succeeded nor errored, the load is still in flight and the
-     timer simply re-arms, however slow the link — a load can never
-     end parked on the 2D globe just for being slow. Giving up
-     happens only on a real verdict: the loader's error callback,
-     or the verified-dark pixel check in animate(). A connection
-     that hangs forever just leaves the 2D globe — the hero's
-     designed safety net — on screen while it lasts. */
+     DISCARDED when it finally arrived even though WebGL was
+     perfectly healthy. There is NO elapsed-time kill at all: while
+     the loader has neither succeeded nor errored, the load is still
+     in flight and the timer simply re-arms, however slow the link —
+     a load can never be abandoned just for being slow, because
+     while it lasts the placeholder disc is the hero's designed
+     on-screen state, not a failure. Giving up happens only on a
+     real verdict: the loader's error callback, or the
+     verified-dark pixel check in animate(). A connection that
+     hangs forever just leaves the placeholder disc on screen while
+     it lasts. */
   var loadTimer=null, loadFinished=false;
   function armLoadTimer(){
     clearTimeout(loadTimer);
@@ -2039,7 +1715,7 @@ window.__startEarth2D();
   cv.style.display='block';
   cv.style.width='100%';
   cv.style.height='100%';
-  /* invisible until the verified handoff fades it in (see the
+  /* invisible until the verified reveal fades it in (see the
      pixel-check block in animate): the model used to pop in opaque
      the moment it parsed, at a different second on every refresh */
   cv.style.opacity='0';
@@ -2051,7 +1727,7 @@ window.__startEarth2D();
 
   var scene=new THREE.Scene();
   var camera=new THREE.PerspectiveCamera(40,1,0.1,120);
-  var CAM_Z=21.72; /* resting camera distance: globe (r=5) fills exactly 65% of the frame — the 2D globe's disc diameter (R = 0.325 x canvas) — so when this renderer swaps in over the 2D one the framing does not change (at 21.5 the WebGL disc measured 65.7%: small, but on the user's domain browser, where the GLB loads and the swap really happens, the Earth read bigger than in the 2D-only preview) */
+  var CAM_Z=21.72; /* resting camera distance: globe (r=5) fills exactly 65% of the frame — the placeholder disc (.sing-shadow) is sized to the same 65% footprint, so when the verified model fades in over it the framing does not change (at 21.5 the WebGL disc measured 65.7%: small, but on the user's domain browser, where the GLB loads and the reveal really happens, the Earth read bigger than the placeholder) */
   var TAN0=Math.tan(Math.asin(5/CAM_Z)); /* the disc's resting tan(angular radius) — the dive dolly is expressed against it */
   camera.position.set(0,0,CAM_Z);
 
@@ -2069,13 +1745,13 @@ window.__startEarth2D();
   fill.position.set(-18,-6,16);
   scene.add(fill);
 
-  /* ---------- rotation state — same feel as the globe it replaces ---------- */
+  /* ---------- rotation state — one clock, from the first frame ---------- */
   var TAU=6.2831853;
-  var ROT0=0.30, ROTC0=1.10; /* the shared navigation timeline's fixed initial orientation — the 2D globe's exact constants, so one timeline drives both renderers */
-  var SURF=reduceMotion?0:0.08, CLD=0.088*(reduceMotion?0.25:1); /* surface / cloud spin rates on that timeline, rad/s — the 2D globe's exact values */
-  var spinY=ROT0; /* Africa / Sahara centre-frame on open — the 2D globe's opening rot; measured from the GLB's own geometry, model azimuth equals texture longitude with zero offset, so one value opens the same face in both renderers */
+  var ROT0=0.30, ROTC0=1.10; /* the shared navigation timeline's fixed initial orientation */
+  var SURF=reduceMotion?0:0.08, CLD=0.088*(reduceMotion?0.25:1); /* surface / cloud spin rates on that timeline, rad/s */
+  var spinY=ROT0; /* Africa / Sahara centre-frame on open; measured from the GLB's own geometry, model azimuth equals texture longitude with zero offset */
   var pitch=0, velSpin=0, velPitch=0;
-  var spinAdj=null, cloudAdj=null; /* timeline adjustments, seeded from the mirrored phase at the handoff (see animate) */
+  var spinAdj=0, cloudAdj=0; /* timeline adjustments — drag, inertia and the dive's extra spin, and nothing else; they start at zero and accumulate from the first frame, so the orientation is the timeline function in animate() at every second of every load */
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
   var dragging=false,lastX=0,lastY=0;
   container.addEventListener('pointerdown',function(e){
@@ -2089,8 +1765,7 @@ window.__startEarth2D();
     if(!dragging)return;
     var dx=e.clientX-lastX, dy=e.clientY-lastY;
     lastX=e.clientX; lastY=e.clientY;
-    if(swapDone&&spinAdj!==null)spinAdj-=dx*0.0052; /* after the handoff the timeline owns spinY — drags land in the adjustment, exactly as they land in the 2D globe's rotAdj */
-    else spinY-=dx*0.0052; /* surface follows the pointer */
+    spinAdj-=dx*0.0052; /* the timeline owns spinY — drags land in the adjustment, so the surface follows the pointer without ever leaving the shared clock */
     pitch=clamp(pitch+dy*0.003,-0.55,0.55);
     velSpin=-dx*0.0052*60; velPitch=dy*0.003*60;
   });
@@ -2129,82 +1804,39 @@ window.__startEarth2D();
     var dt=Math.min((now-lastNow)/1000,0.05);
     lastNow=now;
     if(!visible||!spinGroup)return;
-    /* refresh determinism — phase-locked handoff: until the swap
-       completes, this globe does NOT run its own clock. It mirrors
-       the 2D globe's live rotation phase (window.__earthPhase,
-       published every frame by the 2D script), so whenever the
-       23 MB model happens to finish loading, the face, pitch and
-       spin it fades in with are exactly where the 2D globe has
-       them — no jump, at any load speed, on any refresh. (Before
-       this, each renderer integrated spin from its own start time
-       at its own rate — 0.08 vs 0.05 rad/s from different opening
-       angles — so the swap landed on a different face every time.)
-       The calibration between the two renderers' azimuth
-       conventions is EXACTLY zero, measured from the GLB binary
-       itself (not assumed): parsing the model's own geometry,
-       a surface point's scene azimuth equals its texture
-       longitude with 0.00° offset and 0.00° spread, its embedded
-       day map is byte-identical to the 2D globe's map, and the
-       cloud shell fits the same relation — so spinY = rot and
-       cloudExtra = rotC - rot reproduce the 2D globe's surface
-       and clouds point-for-point. (An earlier +0.05 rad fudge
-       factor and an unlocked cloud layer were the residue of
-       assuming a convention the file does not use.) After the handoff
-       this globe does NOT switch to an integrated clock either:
-       it keeps evaluating the same timeline function the 2D globe
-       publishes (ROT0 - SURF*t plus a seeded adjustment), so the
-       feel never changes across the swap and the face at any
-       second stays identical on every load. If the 2D globe never
-       came live there is no phase to mirror, and the model simply
-       evaluates that same raw timeline itself. */
+    /* refresh determinism — the orientation NEVER integrates the
+       base spin from frame dt. spinY is a pure function of the
+       navigation timeline (rAF timestamps are milliseconds since
+       navigation start): ROT0 - SURF*t + spinAdj, where spinAdj
+       carries only what the timeline cannot know — drag, inertia
+       and the dive's extra spin. This is the only Earth on the
+       page and it runs this same function from its very first
+       frame (behind the placeholder, before it is even visible),
+       so there is no handoff to jump: whenever the 23 MB model
+       finishes loading and fades in, the face, pitch and cloud
+       pattern it reveals are exactly where second t of the
+       timeline puts them — the same face at the same second on
+       every load, at any load speed. (The failure this replaced:
+       spin integrated from capped frame dt, 50 ms cap, so every
+       main-thread stall — texture uploads, GC, the dive's
+       framebuffer reallocations — silently ate spin and two
+       refreshes drifted onto different faces within seconds.) */
     var tS=now/1000;
-    if(!swapDone&&window.__earth2DLive&&window.__earthPhase){
-      spinY=window.__earthPhase.rot;
-      pitch=window.__earthPhase.pitch;
-      cloudLock=(typeof window.__earthPhase.rotC==='number')?(window.__earthPhase.rotC-window.__earthPhase.rot):null;
-      velSpin=0; velPitch=0;
-    }else if(!swapDone){
-      /* the 2D globe is not live yet (its day map is still in
-         flight) — there is no phase to mirror, so run on the raw
-         navigation timeline instead of an integrated clock: spinY
-         is the same pure function of now the 2D globe is about to
-         publish, so when the mirror engages there is nothing to
-         jump, and a model that verifies before the 2D globe does
-         still opens on the timeline's face. Drags keep landing
-         directly on spinY while the pointer is down. */
-      cloudLock=(ROTC0-CLD*tS)-(ROT0-SURF*tS);
-      if(!dragging)spinY=ROT0-SURF*tS;
+    var ds=(window.__diveSpin||1);
+    if(dragging){
+      spinAdj-=SURF*dt*ds; /* hold the surface under the pointer: cancel this frame's timeline advance, dive speedup included */
     }else{
-      /* post-handoff: NEVER integrate the base spin from frame dt
-         again. spinY stays the 2D globe's exact timeline function —
-         ROT0 - SURF*t + spinAdj — where spinAdj (seeded from the
-         mirrored phase at the swap, see the handoff block) carries
-         only what the timeline cannot know: drag, inertia and the
-         dive's extra spin, accumulated with the 2D globe's own
-         rules. The old code integrated spinY from capped frame dt
-         (50 ms cap) from the swap onward, so every main-thread
-         stall after the swap — texture uploads, GC, the dive's
-         framebuffer reallocations — silently ate spin, and two
-         refreshes drifted onto different faces within seconds of
-         the handoff even though the swap itself was phase-locked.
-         On the timeline, the face at second t is the same on every
-         load, at any load speed, for the whole session. */
-      var ds=(window.__diveSpin||1);
-      if(dragging){
-        spinAdj-=SURF*dt*ds; /* hold the surface under the pointer: cancel this frame's timeline advance, as the 2D globe does */
-      }else{
-        spinAdj+=velSpin*dt;
-        if(!reduceMotion)spinAdj-=SURF*dt*(ds-1); /* the dive's extra spin, beyond the timeline's base rate */
-        velSpin*=Math.pow(0.12,dt);
-        if(Math.abs(velSpin)<0.0005)velSpin=0;
-        pitch=clamp(pitch+velPitch*dt,-0.55,0.55);
-        velPitch*=Math.pow(0.12,dt);
-        if(Math.abs(velPitch)<0.0005)velPitch=0;
-      }
-      cloudAdj-=CLD*dt*(ds-1); /* the clouds' share of the dive's extra spin */
-      spinY=ROT0-SURF*tS+spinAdj;
-      cloudLock=(ROTC0-CLD*tS+cloudAdj)-spinY;
+      spinAdj+=velSpin*dt;
+      if(!reduceMotion)spinAdj-=SURF*dt*(ds-1); /* the dive's extra spin, beyond the timeline's base rate */
+      velSpin*=Math.pow(0.12,dt);
+      if(Math.abs(velSpin)<0.0005)velSpin=0;
+      pitch=clamp(pitch+velPitch*dt,-0.55,0.55);
+      velPitch*=Math.pow(0.12,dt);
+      if(Math.abs(velPitch)<0.0005)velPitch=0;
     }
+    cloudAdj-=CLD*dt*(ds-1); /* the clouds' share of the dive's extra spin */
+    spinY=ROT0-SURF*tS+spinAdj;
+    cloudLock=(ROTC0-CLD*tS+cloudAdj)-spinY;
     spinGroup.rotation.y=spinY;
     spinGroup.rotation.x=pitch;
     /* the dive: a true camera dolly, not a bitmap scale. The hero
@@ -2213,7 +1845,7 @@ window.__startEarth2D();
        real fly-in — perspective deepens, the limb flattens, the
        surface streams outward, all re-rendered at full resolution */
     var dm=window.__dollyMag||1;
-    /* same flat-cut guard as the 2D globe: the camera dolly is capped
+    /* flat-cut guard: the camera dolly is capped
        at x1.39 of apparent growth and the canvas element's own scale
        carries the rest, so the sphere is never clipped flat by the
        framebuffer's straight edges while that box is still inside the
@@ -2259,8 +1891,8 @@ window.__startEarth2D();
         }catch(e){}
       }
     }
-    if(cloudNode&&cloudBaseQ){ /* clouds drift a touch faster than the surface — 0.008 rad/s relative, the 2D globe's exact cloud lead (0.088 vs 0.08), so the drift feels identical across the swap. Until the handoff completes the drift is not integrated at all: cloudExtra is locked to the 2D globe's live cloud lead (rotC - rot), because this layer used to start from 0 whenever the model happened to load — at swap time the 2D clouds sat ~0.7 rad away from the model's, so the whole cloud pattern jumped to a different sky at a different second on every refresh, which is exactly what the user's refresh video kept showing even after the surface was phase-locked */
-      if(cloudLock!==null)cloudExtra=cloudLock; /* locked in every state now: mirrored pre-handoff, timeline-derived after it — the drift is never integrated from load-dependent frame time */
+    if(cloudNode&&cloudBaseQ){ /* clouds drift a touch faster than the surface — the timeline's cloud lead (0.088 vs 0.08 rad/s). The drift is never integrated from frame time at all: cloudExtra is locked every frame to the timeline-derived lead (cloudLock, computed in the rotation block above), because an integrated layer used to start from 0 whenever the model happened to load — so the cloud pattern sat at a different sky at a different second on every refresh, which is exactly what the user's refresh video kept showing */
+      if(cloudLock!==null)cloudExtra=cloudLock; /* timeline-derived every frame — the drift is never integrated from load-dependent frame time */
       else cloudExtra-=0.008*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1);
       tmpQ.setFromAxisAngle(YAXIS,cloudExtra);
       cloudNode.quaternion.copy(cloudBaseQ).premultiply(tmpQ);
@@ -2271,8 +1903,7 @@ window.__startEarth2D();
        gain blooms into a milky band around the disc, so light mode
        runs the shells at just over half their dark-mode strength: the
        blue atmosphere light stays clearly present (the user likes it
-       and asked for it not to be removed), only its bloom is tamed
-       (the 2D globe above does the same with its rim/halo alphas).
+       and asked for it not to be removed), only its bloom is tamed.
        Read per frame from window.__ladderTheme, so the daylight
        toggle restyles the atmosphere live; dark stays at full gain. */
     var atmGain=window.__ladderTheme==='light'?0.55:1;
@@ -2302,15 +1933,14 @@ window.__startEarth2D();
         /* one dark read-back is not a verdict. The first frames can
            be sampled while the drawing buffer is still being sized
            or a texture upload is mid-flight, and a single failed
-           check used to tear the whole WebGL globe down and park
-           the hero on the 2D globe for the rest of the load — on
-           machines whose WebGL was perfectly healthy (another of
-           the states in the user's refresh video). A genuinely
+           check used to tear the whole WebGL globe down for the
+           rest of the load — on machines whose WebGL was perfectly
+           healthy. A genuinely
            broken WebGL path — the solid black discs of the early
            rounds — reads dark on EVERY frame, so only give up
            after 90 consecutive dark checks (~1.5 s of rendered
            frames); a globe that lights up even once proceeds to
-           the handoff below. */
+           the reveal below. */
         checkFails++;
         if(checkFails>=90){ clearTimeout(loadTimer); fallback(); return; }
       }else{
@@ -2319,53 +1949,43 @@ window.__startEarth2D();
       window.__earth3DLive=true; /* the hero engine splits the dive
          magnification with the camera dolly only while this is set */
       body.classList.add('has-globe');
-      /* deterministic handoff — the second half of the refresh fix.
-         The swap used to fire the instant the model verified: a hard
-         cut, at whatever second the 23 MB download happened to
-         finish, to a globe whose face was wherever this renderer's
-         own clock had wandered. Now the sequence is fixed on every
-         load: the 2D globe is guaranteed a minimum 1.5 s on screen,
-         then this canvas (transparent until now, phase-locked to the
-         2D globe — see the rotation block above) crossfades in over
-         0.8 s, and only once it is fully in is the 2D canvas
-         retired and this globe released onto the shared timeline
-         under its own seeded adjustments. If the 2D
-         globe never came live (its texture failed) there is nothing
-         to hold for, and the fade runs immediately. */
-      var liveAt=window.__earth2DLiveAt||0;
-      /* the fade is scheduled on the navigation timeline, not from
-         whenever the downloads happened to finish: the 2D globe
-         keeps its minimum 1.5 s on screen, and the swap never starts
-         before a fixed 3.4 s after navigation — so whenever the
-         model verifies inside that window, the handoff lands at the
-         exact same second of every refresh; a slower model swaps the
-         moment it is verified, with the phase (a pure function of
-         the same timeline) already correct whenever it arrives */
-      var holdMs=liveAt?Math.max(0,Math.max(liveAt+1500,3400)-performance.now()):0;
+      /* the one and only reveal: the model is loaded, its first
+         frames are rendered and the pixels above verified a real,
+         lit Earth — so this canvas (transparent until now) fades in
+         ONCE over the dark placeholder disc, and stays forever.
+         There is no other Earth before or after it: the placeholder
+         carries no texture and no continents, so nothing on screen
+         ever "changes into" a different Earth, at any load speed,
+         on any refresh. The globe has followed the shared timeline
+         since its first frame (see the rotation block above), so
+         the fade needs no phase seeding and cannot jump. When the
+         fade completes, .globe-in retires the placeholder disc
+         underneath. */
+      cv.style.opacity='1';
       setTimeout(function(){
-        cv.style.opacity='1';
-        setTimeout(function(){
-          if(window.__stopEarth2D)window.__stopEarth2D(); /* retire the 2D globe under the faded-in model */
-          /* seed the timeline adjustments from the mirrored phase
-             at this exact instant, so the timeline function in
-             animate() takes over from the mirror with zero jump:
-             from here the orientation is ROT0 - SURF*t + spinAdj
-             on the raw navigation timeline, NOT an integrated
-             clock — a stall can no longer eat spin, so every
-             refresh shows the same face at the same second no
-             matter when the 23 MB model happened to arrive */
-          var tSw=performance.now()/1000;
-          spinAdj=spinY-(ROT0-SURF*tSw);
-          cloudAdj=(spinY+cloudExtra)-(ROTC0-CLD*tSw);
-          swapDone=true;
-        },850);
-      },holdMs);
+        body.classList.add('globe-in');
+        swapDone=true;
+      },850);
       }
     }
   }
   requestAnimationFrame(animate);
 
   /* ---------- load the model ---------- */
+  /* real download progress for the boot loader: the loader's
+     progress events carry bytes; when an event has no usable total,
+     fall back to the model's exact known size. The boot arc is
+     monotonic (see the boot controller), so retries never rewind it */
+  var GLB_BYTES=23342728;
+  function reportProgress(e){
+    if(!window.__bootSetProgress||!e||typeof e.loaded!=='number')return;
+    var f=(e.lengthComputable&&e.total)?(e.loaded/e.total):Math.min(0.99,e.loaded/GLB_BYTES);
+    window.__bootSetProgress(f);
+  }
+  var loadAttempts=0;
+  function loadModel(){
+  loadAttempts++;
+  loadFinished=false;
   new THREE.GLTFLoader().load('assets/earth_0_zhtn.glb',function(gltf){
     loadFinished=true;
     if(settled)return;
@@ -2393,7 +2013,7 @@ window.__startEarth2D();
     tmpQ=new THREE.Quaternion();
     spinGroup=new THREE.Group();
     spinGroup.rotation.order='YXZ';
-    spinGroup.rotation.z=-0.244; /* the same 14° axial lean as the old globe */
+    spinGroup.rotation.z=-0.244; /* a fixed 14° axial lean */
     spinGroup.add(gltf.scene);
     /* atmosphere — a fresnel shell rendered in-scene around the model,
        the way the reference object's bright rim hugs its core. Two
@@ -2442,19 +2062,19 @@ window.__startEarth2D();
       rimMat=rim.material;
       spinGroup.add(rim);
       var haloM=new THREE.Mesh(
-        new THREE.SphereGeometry(5.9,64,64), /* 1.18x the surface radius — the same halo extent the 2D globe draws (RR x 1.18), so the atmosphere's footprint matches across the renderer swap too (it was 6.1 = 1.22x) */
+        new THREE.SphereGeometry(5.9,64,64), /* 1.18x the surface radius (it was 6.1 = 1.22x) */
         new THREE.ShaderMaterial({
           vertexShader:atmVert,
           uniforms:{ uSize:{value:1024}, uGain:{value:1} },
-          /* the same flat-cut guard as the 2D globe's halo, in
+          /* flat-cut guard, in
              screen space: past a dolly of ~x1.22 this shell's
              silhouette grows beyond the framebuffer while its glow
              is still strong, and the square canvas would cut it into
              straight seams inside the viewport. The edge factor
              fades the glow to exactly 0 before the framebuffer's
              edge at any camera distance; the fade band was widened
-             from 0.44–0.495 to 0.40–0.46 (with the 2D halo's clamp,
-             after the progress-0.949 mid-dive screenshot) so the
+             from 0.44–0.495 to 0.40–0.46
+             after the progress-0.949 mid-dive screenshot, so the
              glow is fully out with a 0.04 margin to spare, and at
              rest the shell sits at r <= 0.39 so the fade never
              touches it. uSize is the drawing-buffer size in
@@ -2468,11 +2088,34 @@ window.__startEarth2D();
     }catch(e){}
     scene.add(spinGroup);
     resize();
-  },undefined,function(){
+  },reportProgress,function(){
     loadFinished=true;
+    /* a failed download is retried in the background — the boot
+       overlay has its own ~25 s safety exit and the placeholder
+       disc holds the hero meanwhile, so a transient network error
+       must not be the end of the Earth; only when the retries are
+       exhausted is the failure genuine and fallback() runs */
+    if(loadAttempts<4&&!settled){ setTimeout(loadModel,3000); return; }
     clearTimeout(loadTimer); fallback();
   });
+  }
+  loadModel();
 })();
+</script>
+
+<script>
+/* ---------- Earth cache worker ----------
+   Registers sw.js (site root), which keeps the 23 MB Earth model
+   and three.js in Cache Storage between visits, so on every repeat
+   visit the blue Earth is served locally and appears almost
+   instantly instead of re-downloading. Fully guarded: no service
+   worker support, a blocked registration, or a sandboxed frame all
+   fail silently and the page behaves exactly as without it. */
+try{
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+}catch(e){}
 </script>
 
 </body>
