@@ -2,7 +2,7 @@
 <!--
   DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
   Push these 10 files, byte for byte, replacing the old landing page's index.html:
-    index.html                        137,725 bytes (this file, manifest comment included)
+    index.html                        159,515 bytes (this file, manifest comment included)
     assets/earth_0_zhtn.glb        23,342,728 bytes
     assets/earth_clouds_4096.png    9,848,258 bytes
     assets/earth_day_color_4096.jpg 2,693,045 bytes
@@ -1558,13 +1558,39 @@ window.__startEarth2D=function(){
   var dayImg=new Image(), cloudsImg=new Image();
   dayImg.onload=function(){
     dayData=texData(dayImg);
-    /* clouds load only after the day map has locked the sampling
-       size, so both pixel arrays always share one TW/TH */
-    cloudsImg.src='assets/earth_clouds_4096.png';
+    /* the sampling size (TW/TH) is now locked by the day map; the
+       cloud map, when it is eventually requested, samples at the
+       same size, so both pixel arrays always share one TW/TH */
   };
   /* on error dayData stays null; the watchdog reveals the star-logo fallback */
   cloudsImg.onload=function(){ cldData=texData(cloudsImg); if(cldData)cldT0=performance.now(); };
   dayImg.src='assets/earth_day_color_4096.jpg'; /* the GLB file's own colour map, full size */
+
+  /* ---------- cloud map: DEFERRED download ----------
+     The cloud map is 9.8 MB — the second-heaviest file on the page —
+     and it only ever decorates THIS fallback globe. It used to start
+     downloading the moment the day map landed, on every load: it
+     fought the 23 MB GLB for bandwidth (slowing the model, so the
+     verified handoff landed at a different, later second on every
+     refresh), and its own arrival second — which anchors the cloud
+     fade-in — jittered with the contention, so the cloud pattern the
+     user saw differed from refresh to refresh. Now it is requested
+     only when this globe turns out to be the one staying on screen:
+     the GLB script calls window.__startEarthClouds() from its
+     fallback path, and the fixed 20 s timer below covers a GLB load
+     that hangs or runs very long. On the normal path the model is
+     live within seconds, the timer sees __earth3DLive set, and the
+     9.8 MB is never downloaded at all — the page is lighter, the GLB
+     arrives sooner, and the swap lands on its fixed timeline mark. */
+  var cloudsStarted=false;
+  window.__startEarthClouds=function(){
+    if(cloudsStarted||cldData)return;
+    cloudsStarted=true;
+    cloudsImg.src='assets/earth_clouds_4096.png';
+  };
+  setTimeout(function(){
+    if(!window.__earth3DLive)window.__startEarthClouds();
+  },20000);
 
   /* ---------- rotation state ----------
      rot   = longitude (rad) facing the viewer at disc centre
@@ -1974,8 +2000,36 @@ window.__startEarth2D();
     /* the 2D globe normally started on its own at boot and simply
        stays; only start it here if that somehow did not happen */
     if(!window.__earth2DStarted&&window.__startEarth2D)window.__startEarth2D();
+    /* the 2D globe is now the permanent hero, so it gets its cloud
+       layer after all — that download is deferred on the normal path
+       (see the 2D script) precisely so it never competes with this
+       model while the model still has a chance to load */
+    if(window.__startEarthClouds)window.__startEarthClouds();
   }
-  var loadTimer=setTimeout(fallback,90000); /* generous load window for the full 23 MB model, then fall back */
+  /* load window for the full 23 MB model. It used to be a flat
+     90 s kill: on a throttled connection the model can legitimately
+     need longer than that, the timer fired fallback(), and because
+     fallback marks the attempt settled/dead, the model was then
+     DISCARDED when it finally arrived — the load ended parked on
+     the 2D globe even though WebGL was perfectly healthy (one of
+     the two states in the user's refresh video). There is now NO
+     elapsed-time kill at all: while the loader has neither
+     succeeded nor errored, the load is still in flight and the
+     timer simply re-arms, however slow the link — a load can never
+     end parked on the 2D globe just for being slow. Giving up
+     happens only on a real verdict: the loader's error callback,
+     or the verified-dark pixel check in animate(). A connection
+     that hangs forever just leaves the 2D globe — the hero's
+     designed safety net — on screen while it lasts. */
+  var loadTimer=null, loadFinished=false;
+  function armLoadTimer(){
+    clearTimeout(loadTimer);
+    loadTimer=setTimeout(function(){
+      if(!loadFinished||spinGroup){ armLoadTimer(); return; }
+      fallback();
+    },60000);
+  }
+  armLoadTimer();
 
   if(!window.THREE||!THREE.GLTFLoader){ clearTimeout(loadTimer); fallback(); return; }
   try{
@@ -2017,8 +2071,11 @@ window.__startEarth2D();
 
   /* ---------- rotation state — same feel as the globe it replaces ---------- */
   var TAU=6.2831853;
-  var spinY=0.30; /* Africa / Sahara centre-frame on open — the 2D globe's opening rot; measured from the GLB's own geometry, model azimuth equals texture longitude with zero offset, so one value opens the same face in both renderers */
+  var ROT0=0.30, ROTC0=1.10; /* the shared navigation timeline's fixed initial orientation — the 2D globe's exact constants, so one timeline drives both renderers */
+  var SURF=reduceMotion?0:0.08, CLD=0.088*(reduceMotion?0.25:1); /* surface / cloud spin rates on that timeline, rad/s — the 2D globe's exact values */
+  var spinY=ROT0; /* Africa / Sahara centre-frame on open — the 2D globe's opening rot; measured from the GLB's own geometry, model azimuth equals texture longitude with zero offset, so one value opens the same face in both renderers */
   var pitch=0, velSpin=0, velPitch=0;
+  var spinAdj=null, cloudAdj=null; /* timeline adjustments, seeded from the mirrored phase at the handoff (see animate) */
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
   var dragging=false,lastX=0,lastY=0;
   container.addEventListener('pointerdown',function(e){
@@ -2032,7 +2089,8 @@ window.__startEarth2D();
     if(!dragging)return;
     var dx=e.clientX-lastX, dy=e.clientY-lastY;
     lastX=e.clientX; lastY=e.clientY;
-    spinY-=dx*0.0052; /* surface follows the pointer */
+    if(swapDone&&spinAdj!==null)spinAdj-=dx*0.0052; /* after the handoff the timeline owns spinY — drags land in the adjustment, exactly as they land in the 2D globe's rotAdj */
+    else spinY-=dx*0.0052; /* surface follows the pointer */
     pitch=clamp(pitch+dy*0.003,-0.55,0.55);
     velSpin=-dx*0.0052*60; velPitch=dy*0.003*60;
   });
@@ -2063,7 +2121,7 @@ window.__startEarth2D();
 
   var spinGroup=null, cloudNode=null, cloudBaseQ=null, cloudExtra=0, cloudLock=null, haloMat=null, rimMat=null;
   var YAXIS=null, tmpQ=null;
-  var frames=0, lastNow=performance.now();
+  var frames=0, lastNow=performance.now(), checkFails=0;
 
   function animate(now){
     if(dead)return; /* fallback took over — stop this render loop */
@@ -2092,25 +2150,60 @@ window.__startEarth2D();
        and clouds point-for-point. (An earlier +0.05 rad fudge
        factor and an unlocked cloud layer were the residue of
        assuming a convention the file does not use.) After the handoff
-       this globe integrates its own spin at the SAME 0.08 rad/s
-       the 2D globe uses, so the feel never changes across the
-       swap either. If the 2D globe never came live there is no
-       phase to follow and the model simply runs its own clock,
-       exactly as the fallback path always has. */
+       this globe does NOT switch to an integrated clock either:
+       it keeps evaluating the same timeline function the 2D globe
+       publishes (ROT0 - SURF*t plus a seeded adjustment), so the
+       feel never changes across the swap and the face at any
+       second stays identical on every load. If the 2D globe never
+       came live there is no phase to mirror, and the model simply
+       evaluates that same raw timeline itself. */
+    var tS=now/1000;
     if(!swapDone&&window.__earth2DLive&&window.__earthPhase){
       spinY=window.__earthPhase.rot;
       pitch=window.__earthPhase.pitch;
       cloudLock=(typeof window.__earthPhase.rotC==='number')?(window.__earthPhase.rotC-window.__earthPhase.rot):null;
       velSpin=0; velPitch=0;
-    }else if(!dragging){
-      cloudLock=null;
-      if(!reduceMotion)spinY-=0.08*dt*(window.__diveSpin||1); /* slow constant spin — the 2D globe's rate, so the swap never changes the feel; features drift left to right */
-      spinY+=velSpin*dt;
-      pitch=clamp(pitch+velPitch*dt,-0.55,0.55);
-      velSpin*=Math.pow(0.12,dt);
-      velPitch*=Math.pow(0.12,dt);
-      if(Math.abs(velSpin)<0.0005)velSpin=0;
-      if(Math.abs(velPitch)<0.0005)velPitch=0;
+    }else if(!swapDone){
+      /* the 2D globe is not live yet (its day map is still in
+         flight) — there is no phase to mirror, so run on the raw
+         navigation timeline instead of an integrated clock: spinY
+         is the same pure function of now the 2D globe is about to
+         publish, so when the mirror engages there is nothing to
+         jump, and a model that verifies before the 2D globe does
+         still opens on the timeline's face. Drags keep landing
+         directly on spinY while the pointer is down. */
+      cloudLock=(ROTC0-CLD*tS)-(ROT0-SURF*tS);
+      if(!dragging)spinY=ROT0-SURF*tS;
+    }else{
+      /* post-handoff: NEVER integrate the base spin from frame dt
+         again. spinY stays the 2D globe's exact timeline function —
+         ROT0 - SURF*t + spinAdj — where spinAdj (seeded from the
+         mirrored phase at the swap, see the handoff block) carries
+         only what the timeline cannot know: drag, inertia and the
+         dive's extra spin, accumulated with the 2D globe's own
+         rules. The old code integrated spinY from capped frame dt
+         (50 ms cap) from the swap onward, so every main-thread
+         stall after the swap — texture uploads, GC, the dive's
+         framebuffer reallocations — silently ate spin, and two
+         refreshes drifted onto different faces within seconds of
+         the handoff even though the swap itself was phase-locked.
+         On the timeline, the face at second t is the same on every
+         load, at any load speed, for the whole session. */
+      var ds=(window.__diveSpin||1);
+      if(dragging){
+        spinAdj-=SURF*dt*ds; /* hold the surface under the pointer: cancel this frame's timeline advance, as the 2D globe does */
+      }else{
+        spinAdj+=velSpin*dt;
+        if(!reduceMotion)spinAdj-=SURF*dt*(ds-1); /* the dive's extra spin, beyond the timeline's base rate */
+        velSpin*=Math.pow(0.12,dt);
+        if(Math.abs(velSpin)<0.0005)velSpin=0;
+        pitch=clamp(pitch+velPitch*dt,-0.55,0.55);
+        velPitch*=Math.pow(0.12,dt);
+        if(Math.abs(velPitch)<0.0005)velPitch=0;
+      }
+      cloudAdj-=CLD*dt*(ds-1); /* the clouds' share of the dive's extra spin */
+      spinY=ROT0-SURF*tS+spinAdj;
+      cloudLock=(ROTC0-CLD*tS+cloudAdj)-spinY;
     }
     spinGroup.rotation.y=spinY;
     spinGroup.rotation.x=pitch;
@@ -2167,7 +2260,7 @@ window.__startEarth2D();
       }
     }
     if(cloudNode&&cloudBaseQ){ /* clouds drift a touch faster than the surface — 0.008 rad/s relative, the 2D globe's exact cloud lead (0.088 vs 0.08), so the drift feels identical across the swap. Until the handoff completes the drift is not integrated at all: cloudExtra is locked to the 2D globe's live cloud lead (rotC - rot), because this layer used to start from 0 whenever the model happened to load — at swap time the 2D clouds sat ~0.7 rad away from the model's, so the whole cloud pattern jumped to a different sky at a different second on every refresh, which is exactly what the user's refresh video kept showing even after the surface was phase-locked */
-      if(!swapDone&&cloudLock!==null)cloudExtra=cloudLock;
+      if(cloudLock!==null)cloudExtra=cloudLock; /* locked in every state now: mirrored pre-handoff, timeline-derived after it — the drift is never integrated from load-dependent frame time */
       else cloudExtra-=0.008*dt*(reduceMotion?0.25:1)*(window.__diveSpin||1);
       tmpQ.setFromAxisAngle(YAXIS,cloudExtra);
       cloudNode.quaternion.copy(cloudBaseQ).premultiply(tmpQ);
@@ -2205,7 +2298,22 @@ window.__startEarth2D();
         }
         ok=tot>0&&(lit/tot)>0.2;
       }catch(e){ ok=true; /* if read-back itself is blocked, trust the render */ }
-      if(!ok){ clearTimeout(loadTimer); fallback(); return; }
+      if(!ok){
+        /* one dark read-back is not a verdict. The first frames can
+           be sampled while the drawing buffer is still being sized
+           or a texture upload is mid-flight, and a single failed
+           check used to tear the whole WebGL globe down and park
+           the hero on the 2D globe for the rest of the load — on
+           machines whose WebGL was perfectly healthy (another of
+           the states in the user's refresh video). A genuinely
+           broken WebGL path — the solid black discs of the early
+           rounds — reads dark on EVERY frame, so only give up
+           after 90 consecutive dark checks (~1.5 s of rendered
+           frames); a globe that lights up even once proceeds to
+           the handoff below. */
+        checkFails++;
+        if(checkFails>=90){ clearTimeout(loadTimer); fallback(); return; }
+      }else{
       announced=true; settled=true;
       clearTimeout(loadTimer);
       window.__earth3DLive=true; /* the hero engine splits the dive
@@ -2220,7 +2328,8 @@ window.__startEarth2D();
          then this canvas (transparent until now, phase-locked to the
          2D globe — see the rotation block above) crossfades in over
          0.8 s, and only once it is fully in is the 2D canvas
-         retired and this globe released to its own clock. If the 2D
+         retired and this globe released onto the shared timeline
+         under its own seeded adjustments. If the 2D
          globe never came live (its texture failed) there is nothing
          to hold for, and the fade runs immediately. */
       var liveAt=window.__earth2DLiveAt||0;
@@ -2237,15 +2346,28 @@ window.__startEarth2D();
         cv.style.opacity='1';
         setTimeout(function(){
           if(window.__stopEarth2D)window.__stopEarth2D(); /* retire the 2D globe under the faded-in model */
-          swapDone=true; /* from here this globe runs its own clock, at the 2D globe's rate */
+          /* seed the timeline adjustments from the mirrored phase
+             at this exact instant, so the timeline function in
+             animate() takes over from the mirror with zero jump:
+             from here the orientation is ROT0 - SURF*t + spinAdj
+             on the raw navigation timeline, NOT an integrated
+             clock — a stall can no longer eat spin, so every
+             refresh shows the same face at the same second no
+             matter when the 23 MB model happened to arrive */
+          var tSw=performance.now()/1000;
+          spinAdj=spinY-(ROT0-SURF*tSw);
+          cloudAdj=(spinY+cloudExtra)-(ROTC0-CLD*tSw);
+          swapDone=true;
         },850);
       },holdMs);
+      }
     }
   }
   requestAnimationFrame(animate);
 
   /* ---------- load the model ---------- */
   new THREE.GLTFLoader().load('assets/earth_0_zhtn.glb',function(gltf){
+    loadFinished=true;
     if(settled)return;
     var earthMesh=null, cloudMesh=null;
     gltf.scene.traverse(function(o){
@@ -2347,6 +2469,7 @@ window.__startEarth2D();
     scene.add(spinGroup);
     resize();
   },undefined,function(){
+    loadFinished=true;
     clearTimeout(loadTimer); fallback();
   });
 })();
