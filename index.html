@@ -5,15 +5,19 @@
   Launch fill completed: mainnet RPC filled in as
   https://rpc.elysium.kinetiq.xyz (officially published, verified live,
   chain ID 99901 confirmed by direct RPC test).
+  Launch fill completed: the $LADDER token CA is published —
+  0x29bb0a2fDbA59028009FFD03290A21421553EA6a (live on Elysium Mainnet,
+  verified on-chain; shown in the token section and the Mainnet
+  Contracts list, copy enabled on both).
   Remaining launch fills: explorer URL ("Published at launch" — official
   explorer still "Coming soon"), bridge URL ("Published at launch" — no
-  official mainnet bridge published yet), the five mainnet contract
-  addresses ("Deploying at launch" — WHYPE, Factory, Router, $LADDER,
-  Launchpad; not deployed yet), and the $LADDER token CA (stays SOON
-  until known). Do not invent any of those remaining values.
+  official mainnet bridge published yet), and the four remaining mainnet
+  contract addresses ("Deploying at launch" — WHYPE, Factory, Router,
+  Launchpad; Ladder's own contracts not deployed yet). Do not invent any
+  of those remaining values.
   DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
   Push these 11 files, byte for byte, replacing the old landing page's index.html:
-    index.html                        140,383 bytes (this file, manifest comment included)
+    index.html                        140,879 bytes (this file, manifest comment included)
     sw.js                               2,122 bytes (site root — Earth cache service worker; index.html registers it)
     assets/earth_0_zhtn.glb        23,342,728 bytes
     assets/earth_clouds_4096.png    9,848,258 bytes (no longer fetched by the page — the Canvas 2D fallback globe was removed; the GLB embeds its own maps. Kept in the repo, harmless)
@@ -483,6 +487,7 @@ table.cmp tr:last-child td{border-bottom:none}
 .soon-box{border:1px dashed var(--brand-line);border-radius:16px;padding:1.3rem;text-align:center;background:var(--card)}
 .soon-box .ticker{font-size:2.2rem;font-weight:800;letter-spacing:-.03em}
 .soon-box .ca{font-family:var(--mono);font-size:1.3rem;letter-spacing:.35em;color:var(--brand-ink);font-weight:700;margin:.3rem 0}
+.soon-box .ca.live{font-size:.8rem;letter-spacing:.02em;line-height:1.55;word-break:break-all}
 .soon-box p{font-size:.82rem}
 
 /* ============ FAQ ============ */
@@ -1075,7 +1080,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="addr-row"><span class="an">WHYPE</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
       <div class="addr-row"><span class="an">Factory</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
       <div class="addr-row"><span class="an">Router</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
-      <div class="addr-row"><span class="an">$LADDER</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
+      <div class="addr-row"><span class="an">$LADDER</span><code>0x29bb0a2fDbA59028009FFD03290A21421553EA6a</code><button class="copy-btn" data-copy="0x29bb0a2fDbA59028009FFD03290A21421553EA6a">Copy</button></div>
       <div class="addr-row"><span class="an">Launchpad</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
     </div>
     <p class="rv" style="color:var(--faint);font-size:.85rem;margin-top:1rem">Verify before you trade — look-alike tokens exist. These are the Elysium Mainnet contracts; addresses are published here at launch. Contracts are unaudited.</p>
@@ -1097,12 +1102,13 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div>
         <p class="eyebrow" style="color:var(--brand-ink)">The Ladder Token</p>
         <h3>One token, climbing with Ladder</h3>
-        <p>The Ladder token is $LADDER. Its contract address has not been published yet, so no address shared anywhere else is official. When it launches, the verified $LADDER address appears on ladderswap.trade first.</p>
+        <p>The Ladder token is $LADDER — live on Elysium Mainnet, launched on Ascend and trading on its HYPE curve. The verified contract address is shown on this page; no address shared anywhere else is official.</p>
       </div>
       <div class="soon-box">
         <div class="ticker">$LADDER</div>
-        <div class="ca">SOON</div>
-        <p>Contract address · Not published yet.<br />Beware of look-alike tokens using the Ladder name.</p>
+        <div class="ca live">0x29bb0a2fDbA59028009FFD03290A21421553EA6a</div>
+        <p>Contract address · Live on Elysium Mainnet.<br />Beware of look-alike tokens using the Ladder name.</p>
+        <button class="copy-btn" data-copy="0x29bb0a2fDbA59028009FFD03290A21421553EA6a" style="margin-top:.9rem">Copy</button>
       </div>
     </div>
   </div>
