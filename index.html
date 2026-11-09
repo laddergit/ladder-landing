@@ -360,15 +360,15 @@ section{position:relative}
 
 /* ============ SERVICES ============ */
 .services{padding:6rem 0;background:var(--bg)}
-.svc-grid{margin-top:3.2rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.1rem}
-.svc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:1.7rem 1.6rem;text-decoration:none;display:flex;flex-direction:column;gap:.6rem;box-shadow:var(--shadow-rest);transition:border-color .25s,transform .25s var(--ease),box-shadow .25s}
+.svc-grid{margin-top:3.2rem;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.25rem;align-items:stretch}
+.svc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:1.7rem 1.6rem;text-decoration:none;display:flex;flex-direction:column;gap:.6rem;box-shadow:var(--shadow-rest);transition:border-color .25s,transform .25s var(--ease),box-shadow .25s;height:100%;min-height:100%}
 .svc:hover{border-color:var(--brand-line);transform:translateY(-3px);box-shadow:var(--shadow-raised)}
-.svc .ic{width:46px;height:46px;border-radius:12px;background:radial-gradient(circle at 50% 30%,rgba(140,140,140,.22),rgba(10,10,10,.92) 78%);border:1px solid var(--brand-line);display:grid;place-items:center;color:var(--brand-bright)}
+.svc .ic{width:46px;height:46px;flex:none;border-radius:12px;background:radial-gradient(circle at 50% 30%,rgba(140,140,140,.22),rgba(10,10,10,.92) 78%);border:1px solid var(--brand-line);display:grid;place-items:center;color:var(--brand-bright)}
 @media (prefers-color-scheme:light){.svc .ic{background:var(--brand);color:#fff;border-color:var(--brand)}}
 .svc .ic svg{width:22px;height:22px}
 .svc h3{margin:.4rem 0 0;font-size:1.3rem;letter-spacing:-.02em;font-weight:600}
 .svc p{margin:0;color:var(--muted);font-size:.95rem;flex:1}
-.svc .go{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--brand-ink);display:flex;justify-content:space-between;align-items:center}
+.svc .go{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--brand-ink);display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:auto;padding-top:.4rem}
 .svc .st{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;padding:.3rem .6rem;border-radius:999px;background:var(--brand-soft);color:var(--brand-ink)}
 .svc .st.soon{background:rgba(128,128,128,.16);color:var(--muted)}
 .svc-off{cursor:not-allowed}
@@ -560,7 +560,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 /* ============ RESPONSIVE ============ */
 @media (max-width:1080px){
   .nav-links{display:none}
-  .svc-grid{grid-template-columns:repeat(2,1fr)}
+  .svc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
   .steps-grid{grid-template-columns:repeat(3,1fr)}
   .clock-grid{grid-template-columns:repeat(2,1fr)}
   .fact-grid{grid-template-columns:repeat(2,1fr)}
@@ -574,6 +574,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   .sing-side{display:none}
   .sing-hud{display:none}
   .stage.split .stage-in{margin-left:0;margin-right:0}
+  .svc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
   .tool-grid,.token-band{grid-template-columns:minmax(0,1fr)}
   .road-grid{grid-template-columns:1fr}
   .foot-grid{grid-template-columns:1fr 1fr}
@@ -909,18 +910,13 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       </span>
       <span class="svc rv svc-off" style="--d:.12s" aria-disabled="true" title="Coming soon">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L20 4"/><path d="M14 4h6v6"/><path d="M4 14v6h6"/></svg></span>
-        <h3>Memecoin Launchpad</h3><p>Launch a memecoin on a bonding curve. Graduations seed liquidity directly into Ladder's own router — the built-in source of new pools.</p>
-        <span class="go">Launch a Memecoin <span class="st soon">Soon</span></span>
+        <h3>Launchpad</h3><p>Launch a memecoin on a bonding curve. Graduations seed liquidity directly into Ladder's own router — the built-in source of new pools.</p>
+        <span class="go">Open Launchpad <span class="st soon">Soon</span></span>
       </span>
-      <a class="svc rv" style="--d:.06s" href="https://earn.ladderswap.trade" target="_blank" rel="noopener">
+      <a class="svc rv" style="--d:.18s" href="https://earn.ladderswap.trade" target="_blank" rel="noopener">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>
-        <h3>Ladder Earn</h3><p>Markets, portfolio and an aggregator framework that will route across Elysium's deepest pools at mainnet — venues register once, quotes compare live.</p>
+        <h3>Earn</h3><p>Markets, portfolio and an aggregator framework that will route across Elysium's deepest pools at mainnet — venues register once, quotes compare live.</p>
         <span class="go">Open Earn <span class="st">Live · Testnet</span></span>
-      </a>
-      <a class="svc rv" style="--d:.12s" href="https://ladderswap.trade/tracker" target="_blank" rel="noopener">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
-        <h3>Launch Tracker</h3><p>One page watching every memecoin launched on Ladder — curve progress and graduations, straight from the contracts.</p>
-        <span class="go">Open Tracker <span class="st">Live · Testnet</span></span>
       </a>
     </div>
   </div>
