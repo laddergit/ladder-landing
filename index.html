@@ -1,8 +1,19 @@
 <!doctype html>
 <!--
+  MAINNET VERSION — Elysium mainnet is now officially LIVE (chain 99901);
+  this is the launch build, ready to push.
+  Launch fill completed: mainnet RPC filled in as
+  https://rpc.elysium.kinetiq.xyz (officially published, verified live,
+  chain ID 99901 confirmed by direct RPC test).
+  Remaining launch fills: explorer URL ("Published at launch" — official
+  explorer still "Coming soon"), bridge URL ("Published at launch" — no
+  official mainnet bridge published yet), the five mainnet contract
+  addresses ("Deploying at launch" — WHYPE, Factory, Router, $LADDER,
+  Launchpad; not deployed yet), and the $LADDER token CA (stays SOON
+  until known). Do not invent any of those remaining values.
   DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
   Push these 11 files, byte for byte, replacing the old landing page's index.html:
-    index.html                        140,932 bytes (this file, manifest comment included)
+    index.html                        140,383 bytes (this file, manifest comment included)
     sw.js                               2,122 bytes (site root — Earth cache service worker; index.html registers it)
     assets/earth_0_zhtn.glb        23,342,728 bytes
     assets/earth_clouds_4096.png    9,848,258 bytes (no longer fetched by the page — the Canvas 2D fallback globe was removed; the GLB embeds its own maps. Kept in the repo, harmless)
@@ -453,6 +464,8 @@ table.cmp tr:last-child td{border-bottom:none}
 .copy-btn{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:.45rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer}
 .copy-btn:hover{border-color:var(--brand);color:var(--brand-ink)}
 .copy-btn.done{border-color:var(--brand);color:var(--brand-ink)}
+.copy-btn:disabled{opacity:.55;cursor:not-allowed}
+.copy-btn:disabled:hover{border-color:var(--line);color:var(--ink)}
 
 /* ============ ROADMAP + TOKEN ============ */
 .road{padding:6rem 0;background:var(--bg)}
@@ -728,7 +741,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         </span>
         <span class="dl-word" aria-hidden="true"><b id="dlWord">Night</b></span>
       </button>
-      <span class="chain-pill"><i></i> Elysium Testnet · 99801</span>
+      <span class="chain-pill"><i></i> Elysium Mainnet · 99901</span>
       <span class="btn btn-primary btn-sm launch-soon" aria-disabled="true" title="Coming soon">Launch App <span class="soon-tag">Soon</span></span>
       <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
@@ -793,7 +806,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         <h2>See every pool. Prove every trade. <span class="mark">Yours<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span> by design.</h2>
         <p class="sub">Ladder lives on Elysium, Kinetiq's Arbitrum Orbit L2 built to accelerate Hyperliquid. Every quote comes straight from pool reserves, every action is signed by your own wallet, every result lands on a public explorer.</p>
         <div class="mini-stats">
-          <div><b>99801</b><span>Elysium Testnet</span></div>
+          <div><b>99901</b><span>Elysium Mainnet</span></div>
           <div><b>HYPE</b><span>Gas Token</span></div>
           <div><b>0.3%</b><span>Swap Fee to LPs</span></div>
         </div>
@@ -815,10 +828,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="stage-in">
         <p class="kicker">One Ecosystem, Not Separate Apps</p>
         <h2>Every layer of trading, pulled into <span class="mark">one core<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span>.</h2>
-        <p class="sub">Swap, liquidity and memecoin launches — one connected lifecycle on one chain, through one interface. Not separate tools that never talk to each other.</p>
+        <p class="sub">Swap, pools, launchpad and earn — one connected lifecycle on one chain, through one interface. Not separate tools that never talk to each other.</p>
         <div class="stage-chips">
-          <span><b>01</b>&nbsp; Swap</span><span><b>02</b>&nbsp; Pools &amp; LP</span><span><b>03</b>&nbsp; Memecoin Launchpad</span>
-          <span><b>04</b>&nbsp; Earn</span><span><b>05</b>&nbsp; Tracker</span>
+          <span><b>01</b>&nbsp; Swap</span><span><b>02</b>&nbsp; Pools</span><span><b>03</b>&nbsp; Launchpad</span><span><b>04</b>&nbsp; Earn</span>
         </div>
       </div>
     </section>
@@ -826,9 +838,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <!-- Stage 4 -->
     <section class="stage" data-stage="4">
       <div class="stage-in">
-        <p class="kicker">Swap · LP · Memecoin Launchpad</p>
+        <p class="kicker">Swap · Pools · Earn · Launchpad</p>
         <h2>The Ladder <span class="mark">Ecosystem<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span></h2>
-        <p class="sub">Step into any one of them — they all feed the same core. A memecoin launched on Ladder graduates into a Ladder pool, trades on Ladder Swap, and earns in Ladder Earn.</p>
+        <p class="sub">Step into any one of them — they all feed the same core. A token launched on Ladder graduates into a Ladder pool, trades on Ladder Swap, and earns in Ladder Earn.</p>
         <div class="cta-row"><a class="btn btn-outline" href="#services">See All Services ↓</a></div>
       </div>
     </section>
@@ -847,11 +859,11 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <section class="stage" data-stage="6">
       <div class="stage-in">
         <p class="kicker">Explore the Ladder Ecosystem</p>
-        <h2>Mainnet is <span class="mark">coming<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span>.<br />Start on testnet today.</h2>
-        <p class="sub">Elysium mainnet launches 9 November 2026 — and Ladder goes with it. Grab testnet HYPE from the faucet and take your first step now.</p>
+        <h2>Mainnet is <span class="mark">live<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span>.<br />Start climbing today.</h2>
+        <p class="sub">Elysium Mainnet is live — and Ladder is live with it on chain 99901. Connect your wallet and take your first step now.</p>
         <div class="cta-row">
           <span class="btn btn-light launch-soon" aria-disabled="true" title="Coming soon">Start Climbing <span class="soon-tag">Soon</span></span>
-          <a class="btn btn-outline" href="#clock">The Mainnet Clock ↓</a>
+          <a class="btn btn-outline" href="#clock">Mainnet Status ↓</a>
         </div>
       </div>
     </section>
@@ -868,11 +880,11 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <p class="lede rv">Every trader climbs the same staircase. Here is where each Ladder service cuts in, from the first wallet connection to a position that keeps earning.</p>
 
     <div class="climb-list rv">
-      <div class="climb-row"><span class="num">1</span><h3>Connect</h3><p>Link your wallet and Ladder adds the Elysium network for you — chain 99801, gas in HYPE, no manual RPC forms.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">2</span><h3>Fund</h3><p>Claim free testnet HYPE from the official Elysium faucet. The claiming wallet needs a balance on HyperEVM or Hyperliquid mainnet to qualify.</p><span class="tag live">Live</span></div>
+      <div class="climb-row"><span class="num">1</span><h3>Connect</h3><p>Link your wallet and Ladder adds the Elysium network for you — chain 99901, gas in HYPE, no manual RPC forms.</p><span class="tag live">Live</span></div>
+      <div class="climb-row"><span class="num">2</span><h3>Fund</h3><p>Fund your wallet with HYPE on Elysium Mainnet — bridge or transfer HYPE in, and every transaction from there pays gas in HYPE.</p><span class="tag live">Live</span></div>
       <div class="climb-row"><span class="num">3</span><h3>Swap</h3><p>Trade any pair at the market price, quoted live from pool reserves through the router — slippage set by you, one signature.</p><span class="tag live">Live</span></div>
       <div class="climb-row"><span class="num">4</span><h3>Provide</h3><p>Deposit a pair into a pool, receive LP tokens, and earn your share of the 0.3% fee on every routed swap. Remove anytime.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">5</span><h3>Launch</h3><p>Create a memecoin on the bonding-curve launchpad. When the curve completes, liquidity graduates straight into a Ladder pool.</p><span class="tag live">Live</span></div>
+      <div class="climb-row"><span class="num">5</span><h3>Launch</h3><p>Create a token on the bonding-curve launchpad. When the curve completes, liquidity graduates straight into a Ladder pool.</p><span class="tag live">Live</span></div>
       <div class="climb-row"><span class="num">6</span><h3>Climb</h3><p>Put LP positions to work in Ladder Earn, and place ladder orders that split one trade across a staircase of prices, filling rung by rung.</p><span class="tag soon">Earn Live · Orders Phase 02</span></div>
     </div>
   </div>
@@ -902,9 +914,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 <!-- ================= SERVICES ================= -->
 <section class="services" id="services">
   <div class="wrap">
-    <p class="eyebrow center rv">Swap · LP · Memecoin Launchpad</p>
+    <p class="eyebrow center rv">Swap · Pools · Earn · Launchpad</p>
     <h2 class="sec rv" style="text-align:center">The Ladder Ecosystem</h2>
-    <p class="lede center rv">Swap, provide liquidity and launch memecoins — they all feed the same core.</p>
+    <p class="lede center rv">Swap, provide liquidity, earn and launch tokens — they all feed the same core.</p>
 
     <div class="svc-grid">
       <span class="svc rv svc-off" aria-disabled="true" title="Coming soon">
@@ -919,13 +931,13 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       </span>
       <span class="svc rv svc-off" style="--d:.12s" aria-disabled="true" title="Coming soon">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L20 4"/><path d="M14 4h6v6"/><path d="M4 14v6h6"/></svg></span>
-        <h3>Launchpad</h3><p>Launch a memecoin on a bonding curve. Graduations seed liquidity directly into Ladder's own router — the built-in source of new pools.</p>
+        <h3>Launchpad</h3><p>Launch a token on a bonding curve. Graduations seed liquidity directly into Ladder's own router — the built-in source of new pools.</p>
         <span class="go">Open Launchpad <span class="st soon">Soon</span></span>
       </span>
       <a class="svc rv" style="--d:.18s" href="https://earn.ladderswap.trade" target="_blank" rel="noopener">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>
-        <h3>Earn</h3><p>Markets, portfolio and an aggregator framework that will route across Elysium's deepest pools at mainnet — venues register once, quotes compare live.</p>
-        <span class="go">Open Earn <span class="st">Live · Testnet</span></span>
+        <h3>Earn</h3><p>Markets, portfolio and an aggregator that routes across Elysium's deepest pools on mainnet — venues register once, quotes compare live.</p>
+        <span class="go">Open Earn <span class="st">Live · Mainnet</span></span>
       </a>
     </div>
   </div>
@@ -942,9 +954,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <table class="cmp">
         <thead><tr><th>Dimension</th><th class="hl">Ladder</th><th>Separate DEX Tools</th><th>Build It Yourself</th></tr></thead>
         <tbody>
-          <tr><td>Coverage</td><td class="hl" data-h="Ladder">Swap, pools &amp; LP, memecoin launchpad, earn &amp; tracker</td><td data-h="Separate tools">One tool each</td><td data-h="Build it">Build each piece</td></tr>
+          <tr><td>Coverage</td><td class="hl" data-h="Ladder">Swap, pools, earn &amp; launchpad</td><td data-h="Separate tools">One tool each</td><td data-h="Build it">Build each piece</td></tr>
           <tr><td>Entry cost</td><td class="hl" data-h="Ladder">Gas in HYPE only</td><td data-h="Separate tools">Fees &amp; accounts per tool</td><td data-h="Build it">Months of engineering</td></tr>
-          <tr><td>Time to first trade</td><td class="hl" data-h="Ladder">Minutes from the faucet</td><td data-h="Separate tools">Days of setup</td><td data-h="Build it">Months</td></tr>
+          <tr><td>Time to first trade</td><td class="hl" data-h="Ladder">Minutes — connect &amp; swap</td><td data-h="Separate tools">Days of setup</td><td data-h="Build it">Months</td></tr>
           <tr><td>Single interface</td><td class="hl yes" data-h="Ladder">✓ One app</td><td class="no" data-h="Separate tools">✕</td><td class="mid" data-h="Build it">Eventually</td></tr>
           <tr><td>Launches graduate into pools</td><td class="hl yes" data-h="Ladder">✓ By design</td><td class="no" data-h="Separate tools">✕</td><td class="no" data-h="Build it">✕</td></tr>
           <tr><td>Self-custody throughout</td><td class="hl yes" data-h="Ladder">✓ You sign everything</td><td class="mid" data-h="Separate tools">Varies</td><td class="yes" data-h="Build it">✓</td></tr>
@@ -955,27 +967,27 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   </div>
 </section>
 
-<!-- ================= MAINNET CLOCK ================= -->
+<!-- ================= MAINNET STATUS ================= -->
 <section class="clock" id="clock">
   <div class="wrap">
-    <p class="eyebrow rv">Elysium Mainnet · 9 November 2026</p>
-    <h2 class="sec rv">The Mainnet Clock<br />Is Ticking</h2>
-    <p class="lede rv">Ladder is live on Elysium Testnet today and follows the chain to mainnet on launch day — same interface, same pool model, real assets. The testnet is where positions, pools and playbooks get rehearsed.</p>
+    <p class="eyebrow rv">Elysium Mainnet · Live</p>
+    <h2 class="sec rv">Mainnet Is Live</h2>
+    <p class="lede rv">Ladder is live on Elysium Mainnet — same interface, same pool model, real assets. Swap, provide liquidity, launch and earn, all settled on chain 99901 with gas in HYPE.</p>
 
     <div class="clock-grid rv">
-      <div class="clock-cell"><b>99801</b><span>Chain ID · Elysium Testnet today</span></div>
+      <div class="clock-cell"><b>99901</b><span>Chain ID · Elysium Mainnet</span></div>
       <div class="clock-cell"><b>0.3%</b><span>Fee on every swap, shared by LPs</span></div>
       <div class="clock-cell"><b>HYPE</b><span>Gas token across the ecosystem</span></div>
-      <div class="clock-cell"><b>9 Nov</b><span>2026 · Elysium mainnet launch</span></div>
+      <div class="clock-cell"><b>Live</b><span>Elysium Mainnet · Now live</span></div>
     </div>
 
-    <div class="countdown rv" role="timer" aria-label="Countdown to Elysium mainnet">
-      <div><div class="cd-label">Countdown to Mainnet</div><div style="color:var(--muted);font-size:.9rem;margin-top:.3rem">9 November 2026 · Ladder deploys with Elysium</div></div>
+    <div class="countdown rv" role="status" aria-label="Elysium mainnet status">
+      <div><div class="cd-label">Mainnet Status · Live</div><div style="color:var(--muted);font-size:.9rem;margin-top:.3rem">Elysium Mainnet is live · Ladder is live on chain 99901</div></div>
       <div class="cd-nums">
-        <div><b id="cdD">—</b><span>Days</span></div>
-        <div><b id="cdH">—</b><span>Hours</span></div>
-        <div><b id="cdM">—</b><span>Minutes</span></div>
-        <div><b id="cdS">—</b><span>Seconds</span></div>
+        <div><b>99901</b><span>Chain ID</span></div>
+        <div><b>HYPE</b><span>Gas Token</span></div>
+        <div><b>Live</b><span>Status</span></div>
+        <div><b>$LADDER</b><span>Token</span></div>
       </div>
     </div>
   </div>
@@ -999,9 +1011,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         <div class="flip" aria-hidden="true">⇅</div>
         <div class="swap-box">
           <label>Buy · Quoted from pool reserves</label>
-          <div class="swap-row"><input id="swapOut" type="text" value="0.0" readonly aria-label="Estimated tUSD received" /><span class="tok"><i>$</i> tUSD</span></div>
+          <div class="swap-row"><input id="swapOut" type="text" value="0.0" readonly aria-label="Estimated USD received" /><span class="tok"><i>$</i> USD</span></div>
         </div>
-        <div class="swap-meta"><span>Slippage <b>0.5%</b></span><span>Fee <b>0.3%</b></span><span>Route <b>WHYPE → tUSD</b></span></div>
+        <div class="swap-meta"><span>Slippage <b>0.5%</b></span><span>Fee <b>0.3%</b></span><span>Route <b>WHYPE → USD</b></span></div>
         <span class="btn btn-primary launch-soon" aria-disabled="true" title="Coming soon">Swap in the Real App <span class="soon-tag">Soon</span></span>
         <p class="panel-note">Preview with an illustrative rate. Live quotes come from the pool in the app.</p>
       </div>
@@ -1033,11 +1045,11 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <p class="eyebrow rv">No Consultants. No Manual Setup.</p>
     <h2 class="sec rv">From zero to trading in 5 steps</h2>
     <div class="steps-grid rv">
-      <div class="step"><span class="n">01</span><h3>Connect a wallet</h3><p>Open the app and connect. Ladder adds Elysium Testnet to your wallet automatically.</p></div>
-      <div class="step"><span class="n">02</span><h3>Get testnet HYPE</h3><p>Claim from the <a href="https://elysium.kinetiq.xyz/faucet" target="_blank" rel="noopener">official faucet</a> — gas for everything that follows.</p></div>
+      <div class="step"><span class="n">01</span><h3>Connect a wallet</h3><p>Open the app and connect. Ladder adds Elysium Mainnet to your wallet automatically.</p></div>
+      <div class="step"><span class="n">02</span><h3>Get HYPE</h3><p>Fund your wallet with HYPE on Elysium Mainnet — gas for everything that follows.</p></div>
       <div class="step"><span class="n">03</span><h3>Make your first swap</h3><p>Pick a pair, check the pool quote, set slippage, sign once. Done.</p></div>
       <div class="step"><span class="n">04</span><h3>Seed a pool</h3><p>Deposit a pair and start earning your share of the 0.3% fee on every swap.</p></div>
-      <div class="step"><span class="n">05</span><h3>Launch or climb</h3><p>Launch a memecoin, or track it all from the Tracker.</p></div>
+      <div class="step"><span class="n">05</span><h3>Launch or climb</h3><p>Launch a token, or put your LP positions to work in Earn.</p></div>
     </div>
   </div>
 </section>
@@ -1050,22 +1062,23 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <p class="lede rv">Ladder settles every swap, pool and order on Elysium — from wallet signature to explorer receipt. Network parameters straight from the chain itself.</p>
 
     <div class="fact-grid rv">
-      <div class="fact"><span>Network</span><b>Elysium Testnet</b><p>Arbitrum Orbit L2 by Kinetiq, for the Hyperliquid ecosystem.</p></div>
-      <div class="fact"><span>Chain ID</span><b>99801</b><p>The chain Ladder deploys to first — your wallet switches automatically.</p></div>
+      <div class="fact"><span>Network</span><b>Elysium Mainnet</b><p>Arbitrum Orbit L2 by Kinetiq, for the Hyperliquid ecosystem.</p></div>
+      <div class="fact"><span>Chain ID</span><b>99901</b><p>The chain Ladder is live on — your wallet switches automatically.</p></div>
       <div class="fact"><span>Gas Token</span><b>HYPE</b><p>Every transaction on Elysium pays gas in HYPE, 18 decimals.</p></div>
-      <div class="fact"><span>RPC</span><b style="font-size:1rem">testnet-rpc.elysium.kinetiq.xyz</b><p>The public endpoint the Ladder app reads reserves through.</p></div>
-      <div class="fact"><span>Explorer</span><b style="font-size:1rem">elysium.kinetiq.xyz/testnet-explorer</b><p>Follow every swap, pool and deployment as it lands on chain.</p></div>
-      <div class="fact"><span>Faucet</span><b style="font-size:1rem">elysium.kinetiq.xyz/faucet</b><p>Where the first rung starts: free testnet HYPE for qualifying wallets.</p></div>
+      <div class="fact"><span>RPC</span><b style="font-size:.85rem">https://rpc.elysium.kinetiq.xyz</b><p>The official Elysium Mainnet RPC — live on chain 99901.</p></div>
+      <div class="fact"><span>Explorer</span><b style="font-size:1rem">Published at launch</b><p>The official Elysium Mainnet explorer — published at launch. Follow every swap, pool and deployment as it lands on chain.</p></div>
+      <div class="fact"><span>Bridge</span><b style="font-size:1rem">Published at launch</b><p>The official bridge to Elysium Mainnet — published at launch.</p></div>
     </div>
 
-    <div class="addr-list rv" aria-label="Canonical contract addresses">
-      <div class="addr-row"><span class="an">WHYPE</span><code>0xCD57F65c2B0e5881CFC2E609F7CD53b746E1F234</code><button class="copy-btn" data-copy="0xCD57F65c2B0e5881CFC2E609F7CD53b746E1F234">Copy</button></div>
-      <div class="addr-row"><span class="an">Factory</span><code>0xF7B126C6B0DA6ce679Ef4a03355aAC500289e338</code><button class="copy-btn" data-copy="0xF7B126C6B0DA6ce679Ef4a03355aAC500289e338">Copy</button></div>
-      <div class="addr-row"><span class="an">Router</span><code>0x3f910Aa503d93c1d0D28DDE3a9539e6e24dffA68</code><button class="copy-btn" data-copy="0x3f910Aa503d93c1d0D28DDE3a9539e6e24dffA68">Copy</button></div>
-      <div class="addr-row"><span class="an">tUSD</span><code>0xD64Dd465f3B88f88d1cFA66af7ad4A6d40257EA9</code><button class="copy-btn" data-copy="0xD64Dd465f3B88f88d1cFA66af7ad4A6d40257EA9">Copy</button></div>
-      <div class="addr-row"><span class="an">Launchpad</span><code>0xfC399406AF110831F12F25D93D716f7961c8FF88</code><button class="copy-btn" data-copy="0xfC399406AF110831F12F25D93D716f7961c8FF88">Copy</button></div>
+    <h3 class="rv" style="font-size:1.15rem;letter-spacing:-.01em;margin:2.2rem 0 0">Mainnet Contracts</h3>
+    <div class="addr-list rv" aria-label="Mainnet contract addresses">
+      <div class="addr-row"><span class="an">WHYPE</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
+      <div class="addr-row"><span class="an">Factory</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
+      <div class="addr-row"><span class="an">Router</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
+      <div class="addr-row"><span class="an">$LADDER</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
+      <div class="addr-row"><span class="an">Launchpad</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
     </div>
-    <p class="rv" style="color:var(--faint);font-size:.85rem;margin-top:1rem">Verify before you trade — look-alike tokens exist on testnet. These are Elysium Testnet addresses; testnet assets have no monetary value.</p>
+    <p class="rv" style="color:var(--faint);font-size:.85rem;margin-top:1rem">Verify before you trade — look-alike tokens exist. These are the Elysium Mainnet contracts; addresses are published here at launch. Contracts are unaudited.</p>
   </div>
 </section>
 
@@ -1075,19 +1088,19 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <p class="eyebrow rv">Roadmap</p>
     <h2 class="sec rv">The climb ahead</h2>
     <div class="road-grid rv">
-      <div class="phase"><span class="ph">Phase 01</span><h3>Testnet Launch</h3><p>Ladder's AMM contracts — Factory, Router, WHYPE routing — live on Elysium Testnet, with swap, liquidity and the memecoin launchpad open in the app.</p><span class="st">In Progress · Live</span></div>
+      <div class="phase"><span class="ph">Phase 01</span><h3>Mainnet Launch</h3><p>Ladder's AMM contracts — Factory, Router, WHYPE routing — live on Elysium Mainnet, with swap, liquidity and the launchpad open in the app.</p><span class="st">Live · Mainnet</span></div>
       <div class="phase"><span class="ph">Phase 02</span><h3>Ladder Limit Orders</h3><p>The namesake feature: multi-rung limit orders that split one trade across a staircase of prices and fill gradually as the market moves through each level.</p><span class="st next">Next</span></div>
-      <div class="phase"><span class="ph">Phase 03</span><h3>Mainnet</h3><p>Ladder follows Elysium to mainnet on 9 November 2026, carrying the same interface and pool model over to real assets — with aggregator routing across the chain's deepest pools.</p><span class="st later">Follows Elysium</span></div>
+      <div class="phase"><span class="ph">Phase 03</span><h3>Mainnet Growth</h3><p>Ladder is live on Elysium Mainnet with the same interface and pool model on real assets — with aggregator routing across the chain's deepest pools through Ladder Earn.</p><span class="st">Live · Mainnet</span></div>
     </div>
 
     <div class="token-band rv">
       <div>
         <p class="eyebrow" style="color:var(--brand-ink)">The Ladder Token</p>
         <h3>One token, climbing with Ladder</h3>
-        <p>The Ladder token is $LDR. Its contract address has not been published yet, so no address shared anywhere else is official. When it launches, the verified $LDR address appears on ladderswap.trade first.</p>
+        <p>The Ladder token is $LADDER. Its contract address has not been published yet, so no address shared anywhere else is official. When it launches, the verified $LADDER address appears on ladderswap.trade first.</p>
       </div>
       <div class="soon-box">
-        <div class="ticker">$LDR</div>
+        <div class="ticker">$LADDER</div>
         <div class="ca">SOON</div>
         <p>Contract address · Not published yet.<br />Beware of look-alike tokens using the Ladder name.</p>
       </div>
@@ -1101,12 +1114,12 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <p class="eyebrow rv">Questions</p>
     <h2 class="sec rv">Before you climb</h2>
     <div class="faq-list rv">
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">What is Ladder?<span class="pm">+</span></button><div class="faq-a"><p>Ladder is a decentralized exchange on Elysium. It combines a classic AMM for instant swaps and liquidity pools with a memecoin launchpad and ladder-style limit orders — one order spread across several price levels, filling step by step. The rollout is phased: swaps, liquidity and the memecoin launchpad first; ladder orders follow in Phase 02.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Where does Ladder launch?<span class="pm">+</span></button><div class="faq-a"><p>On Elysium, Kinetiq's Arbitrum Orbit L2 for the Hyperliquid ecosystem. Ladder runs on Elysium Testnet today (chain ID 99801, gas token HYPE) and moves to mainnet when Elysium mainnet launches on 9 November 2026.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">How do I get testnet HYPE?<span class="pm">+</span></button><div class="faq-a"><p>Use the <a href="https://elysium.kinetiq.xyz/faucet" target="_blank" rel="noopener">official Elysium faucet</a>. It requires the claiming wallet to hold a balance on HyperEVM or Hyperliquid mainnet. You can also bridge HYPE from HyperEVM testnet, where it converts 1:1.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">What is Ladder?<span class="pm">+</span></button><div class="faq-a"><p>Ladder is a decentralized exchange on Elysium. It combines a classic AMM for instant swaps and liquidity pools with a launchpad and ladder-style limit orders — one order spread across several price levels, filling step by step. The rollout is phased: swaps, liquidity and the launchpad first; ladder orders follow in Phase 02.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Where does Ladder launch?<span class="pm">+</span></button><div class="faq-a"><p>On Elysium, Kinetiq's Arbitrum Orbit L2 for the Hyperliquid ecosystem. Ladder is live on Elysium Mainnet (chain ID 99901, gas token HYPE).</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">How do I get HYPE?<span class="pm">+</span></button><div class="faq-a"><p>Transfer or bridge HYPE to Elysium Mainnet (chain ID 99901). HYPE is the gas token on Elysium, so every swap, pool deposit and launch pays gas in HYPE.</p></div></div>
       <div class="faq-item"><button class="faq-q" aria-expanded="false">What does providing liquidity earn?<span class="pm">+</span></button><div class="faq-a"><p>Every swap pays a 0.3% fee. That fee stays in the pool and is shared by liquidity providers in proportion to their LP share, so a position grows with trading volume. Liquidity can be withdrawn at any time.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can Ladder use pools from other DEXes on Elysium?<span class="pm">+</span></button><div class="faq-a"><p>At mainnet, yes — through routing, not by moving liquidity. Ladder Earn's aggregator framework registers other Elysium venues once their routers are public, compares quotes across them, and routes each trade to the deepest pool. Liquidity always stays in its home pool; Ladder is the doorway.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is Ladder audited? Is testnet money real?<span class="pm">+</span></button><div class="faq-a"><p>No and no. Ladder currently runs on testnet only, where tokens have no monetary value, and the contracts have not been audited. Use a wallet that holds nothing of value, and never treat testnet activity as financial advice.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can Ladder use pools from other DEXes on Elysium?<span class="pm">+</span></button><div class="faq-a"><p>Yes — through routing, not by moving liquidity. Ladder Earn's aggregator framework registers other Elysium venues once their routers are public, compares quotes across them, and routes each trade to the deepest pool. Liquidity always stays in its home pool; Ladder is the doorway.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is Ladder audited?<span class="pm">+</span></button><div class="faq-a"><p>No. Ladder's contracts have not been audited. Ladder runs on Elysium Mainnet with real assets — only trade what you can afford to risk, and never treat this as financial advice.</p></div></div>
     </div>
   </div>
 </section>
@@ -1116,10 +1129,10 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   <div class="wrap">
     <p class="eyebrow center rv">See What the Pools See</p>
     <h2 class="rv">Ready to climb?</h2>
-    <p class="rv">Grab testnet HYPE from the faucet, connect your wallet, and take your first step on Elysium. Swap at market, seed a pool, or wait for the ladder to come to you.</p>
+    <p class="rv">Connect your wallet and take your first step on Elysium Mainnet. Swap at market, seed a pool, or wait for the ladder to come to you.</p>
     <div class="cta-row rv">
       <span class="btn btn-primary launch-soon" aria-disabled="true" title="Coming soon" style="padding:1rem 1.7rem;font-size:1rem">Launch the App <span class="soon-tag">Soon</span></span>
-      <a class="btn btn-ghost" href="https://elysium.kinetiq.xyz/faucet" target="_blank" rel="noopener" style="padding:1rem 1.7rem;font-size:1rem">Get Testnet HYPE</a>
+      <a class="btn btn-ghost" href="#contracts" style="padding:1rem 1.7rem;font-size:1rem">View Contracts</a>
     </div>
   </div>
 </section>
@@ -1135,9 +1148,8 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       </div>
       <div><h4>App</h4>
         <span class="foot-off" aria-disabled="true" title="Coming soon">Swap &amp; Pools <span class="soon-tag">Soon</span></span>
-        <span class="foot-off" aria-disabled="true" title="Coming soon">Memecoin Launchpad <span class="soon-tag">Soon</span></span>
+        <span class="foot-off" aria-disabled="true" title="Coming soon">Launchpad <span class="soon-tag">Soon</span></span>
         <a href="https://earn.ladderswap.trade" target="_blank" rel="noopener">Ladder Earn</a>
-        <a href="https://ladderswap.trade/tracker" target="_blank" rel="noopener">Tracker</a>
       </div>
       <div><h4>Explore</h4>
         <a href="#services">Ecosystem</a>
@@ -1147,15 +1159,15 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         <a href="#faq">FAQ</a>
       </div>
       <div><h4>Elysium</h4>
-        <a href="https://elysium.kinetiq.xyz/faucet" target="_blank" rel="noopener">Faucet</a>
-        <a href="https://elysium.kinetiq.xyz/testnet-explorer" target="_blank" rel="noopener">Explorer</a>
+        <a href="#contracts">Bridge · Published at launch</a>
+        <a href="#contracts">Explorer · Published at launch</a>
         <a href="#contracts">Contracts</a>
         <a href="https://ladderswap.trade" target="_blank" rel="noopener">ladderswap.trade</a>
       </div>
     </div>
     <div class="foot-legal">
-      <span>Ladder · Elysium Testnet · 2026</span>
-      <span>Testnet assets have no monetary value · Contracts unaudited · Use a testnet-only wallet</span>
+      <span>Ladder · Elysium Mainnet · 2026</span>
+      <span>Contracts unaudited · Real assets — trade at your own risk</span>
     </div>
   </div>
   <div class="foot-giant" aria-hidden="true"><img src="assets/ladder-star-dark.png" alt="" /><span>LADDER</span></div>
@@ -1501,17 +1513,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     }
   }
 
-  /* ---------- Countdown to Elysium mainnet: 9 Nov 2026 (WIB) ---------- */
-  var target=new Date('2026-11-09T00:00:00+07:00').getTime();
-  var cdD=document.getElementById('cdD'),cdH=document.getElementById('cdH'),cdM=document.getElementById('cdM'),cdS=document.getElementById('cdS');
-  function pad(n){return (n<10?'0':'')+n;}
-  function cd(){
-    var diff=target-Date.now();
-    if(diff<=0){ cdD.textContent='0'; cdH.textContent='00'; cdM.textContent='00'; cdS.textContent='00'; return; }
-    var d=Math.floor(diff/86400000), h=Math.floor(diff%86400000/3600000), m=Math.floor(diff%3600000/60000), s=Math.floor(diff%60000/1000);
-    cdD.textContent=d; cdH.textContent=pad(h); cdM.textContent=pad(m); cdS.textContent=pad(s);
-  }
-  cd(); setInterval(cd,1000);
+  /* ---------- Mainnet status: live on Elysium Mainnet (chain 99901) — static status panel, no countdown ---------- */
 
   /* ---------- Swap preview (illustrative rate) ---------- */
   var RATE=545.24; /* illustrative preview rate only; live quotes come from the pool */
