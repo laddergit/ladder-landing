@@ -5,16 +5,14 @@
   Launch fill completed: mainnet RPC filled in as
   https://rpc.elysium.kinetiq.xyz (officially published, verified live,
   chain ID 99901 confirmed by direct RPC test).
-  Launch fill completed: the $LADDER token CA is published —
-  0x29bb0a2fDbA59028009FFD03290A21421553EA6a (live on Elysium Mainnet,
-  verified on-chain; shown in the token section and the Mainnet
-  Contracts list, copy enabled on both).
   Remaining launch fills: explorer URL ("Published at launch" — official
   explorer still "Coming soon"), bridge URL ("Published at launch" — no
-  official mainnet bridge published yet), and the four remaining mainnet
-  contract addresses ("Deploying at launch" — WHYPE, Factory, Router,
-  Launchpad; Ladder's own contracts not deployed yet). Do not invent any
-  of those remaining values.
+  official mainnet bridge published yet), the $LADDER token contract
+  address (not displayed on the site for now — "SOON" in the token
+  section and "Deploying at launch" in Mainnet Contracts), and the four
+  remaining mainnet contract addresses ("Deploying at launch" — WHYPE,
+  Factory, Router, Launchpad; Ladder's own contracts not deployed yet).
+  Do not invent any of those remaining values.
   DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
   Push these 11 files, byte for byte, replacing the old landing page's index.html:
     index.html                        140,879 bytes (this file, manifest comment included)
@@ -1080,7 +1078,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="addr-row"><span class="an">WHYPE</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
       <div class="addr-row"><span class="an">Factory</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
       <div class="addr-row"><span class="an">Router</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
-      <div class="addr-row"><span class="an">$LADDER</span><code>0x29bb0a2fDbA59028009FFD03290A21421553EA6a</code><button class="copy-btn" data-copy="0x29bb0a2fDbA59028009FFD03290A21421553EA6a">Copy</button></div>
+      <div class="addr-row"><span class="an">$LADDER</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
       <div class="addr-row"><span class="an">Launchpad</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
     </div>
     <p class="rv" style="color:var(--faint);font-size:.85rem;margin-top:1rem">Verify before you trade — look-alike tokens exist. These are the Elysium Mainnet contracts; addresses are published here at launch. Contracts are unaudited.</p>
@@ -1102,13 +1100,13 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div>
         <p class="eyebrow" style="color:var(--brand-ink)">The Ladder Token</p>
         <h3>One token, climbing with Ladder</h3>
-        <p>The Ladder token is $LADDER — live on Elysium Mainnet, launched on Ascend and trading on its HYPE curve. The verified contract address is shown on this page; no address shared anywhere else is official.</p>
+        <p>The Ladder token is $LADDER — live on Elysium Mainnet, launched on Ascend and trading on its HYPE curve.</p>
       </div>
       <div class="soon-box">
         <div class="ticker">$LADDER</div>
-        <div class="ca live">0x29bb0a2fDbA59028009FFD03290A21421553EA6a</div>
-        <p>Contract address · Live on Elysium Mainnet.<br />Beware of look-alike tokens using the Ladder name.</p>
-        <button class="copy-btn" data-copy="0x29bb0a2fDbA59028009FFD03290A21421553EA6a" style="margin-top:.9rem">Copy</button>
+        <div class="ca">SOON</div>
+        <p>Contract address<br />Beware of look-alike tokens using the Ladder name.</p>
+        <button class="copy-btn" disabled aria-disabled="true" title="Available at launch" style="margin-top:.9rem">Copy</button>
       </div>
     </div>
   </div>
