@@ -35,7 +35,7 @@
    min(118vmin,980px) box) so boot and hero share one scene. ============ */
 html.booting{overflow:hidden}
 html.booting body{overflow:hidden}
-.boot{position:fixed;inset:0;z-index:9999;background:#000;color:#f4f4f4;transition:background-color .8s ease}
+.boot{position:fixed;inset:0;z-index:9999;background:#000;color:#f4f4f4;transition:background-color .8s ease;pointer-events:none}
 .boot.boot-out{background:rgba(0,0,0,0)}
 .boot-rings{position:absolute;left:50%;top:46%;width:min(118vmin,980px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;transition:opacity .5s ease .35s}
 .boot.boot-out .boot-rings{opacity:0}
@@ -615,11 +615,14 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 <!-- ================= BOOT LOADER =================
      Orbit rings + the Ladder star, drawn over black from the first
      paint. The rings use the hero ring system's exact geometry and
-     insets (0 / 11 / 22 / 33 / 44%), so when the Earth is live the
-     star, label, percentage and progress arc fade out, the overlay
-     lifts, and these rings crossfade into the hero's identical rings
-     with the Earth fading in at their centre — one continuous scene,
-     no jump, and the hero is never seen without its Earth. -->
+     insets (0 / 11 / 22 / 33 / 44%). The overlay is a brief intro,
+     NOT a gate on the Earth: it lifts on a short fixed schedule
+     (see the controller below) while the 23 MB model keeps loading
+     in the background. As it lifts, the star, label, percentage and
+     progress arc fade out and these rings crossfade into the hero's
+     identical rings; the hero's dark placeholder disc holds the
+     Earth's place at their centre until the verified model fades
+     in over it, once — one continuous scene, no jump. -->
 <div class="boot" id="boot" role="status" aria-label="Loading Ladder">
   <div class="boot-rings" aria-hidden="true">
     <svg viewBox="0 0 100 100" aria-hidden="true">
@@ -643,16 +646,21 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 </div>
 <script>
 /* ---------- Boot loader controller ----------
-   Runs immediately after the overlay markup: locks scroll, receives
-   the GLB loader's REAL byte progress (window.__bootSetProgress,
-   wired in the GLB script) and drives the arc + percentage, and owns
-   the exit. The exit is gated on the Earth being fully live
-   (window.__earth3DLive — model loaded, first frame rendered,
-   pixel-verified) or genuinely failed (window.__earth3DFailed),
-   never shows for less than ~600 ms (cached visits must not flash),
-   and a ~25 s safety exit guarantees the page is never trapped
-   behind the loader — the hero's placeholder disc holds the Earth
-   meanwhile and the model keeps retrying in the background. The
+   Runs immediately after the overlay markup: locks scroll briefly,
+   receives the GLB loader's REAL byte progress
+   (window.__bootSetProgress, wired in the GLB script) and drives
+   the arc + percentage while the overlay is up, and owns the exit.
+   The exit is deliberately NOT gated on the Earth: gating it on
+   window.__earth3DLive (model loaded, first frame rendered,
+   pixel-verified) held the whole page hostage to a 23 MB download
+   — 10–20 s of loading screen on a slow link. Now the overlay
+   lifts as soon as the page itself is ready, and never later than
+   ~1.4 s after it appeared; the model keeps loading in the
+   background and fades in over the hero's placeholder disc
+   whenever it is verified live (or the disc simply stays, on a
+   genuine failure). The overlay never shows for less than
+   ~600 ms (cached visits must not flash), and a 5 s backstop
+   guarantees the page is never trapped behind the loader. The
    deterministic rotation timeline runs from navigation start
    regardless, so the Earth revealed is at its shared-timeline
    orientation. */
@@ -675,21 +683,24 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   function exit(complete){
     if(done)return; done=true;
     if(complete)window.__bootSetProgress(1);
+    /* scroll unlocks the moment the fade starts, not when the
+       overlay node is removed — the overlay is pointer-events:none
+       and transparent as it lifts, so nothing is trapped under it */
+    root.classList.remove('booting');
     overlay.classList.add('boot-out');
     setTimeout(function(){
-      root.classList.remove('booting');
       if(overlay.parentNode)overlay.parentNode.removeChild(overlay);
     },950);
   }
   window.__bootExit=exit;
   var iv=setInterval(function(){
-    if(window.__earth3DLive||window.__earth3DFailed){
+    var el=performance.now()-t0;
+    if(el>=1400||(el>=600&&document.readyState==='complete')){
       clearInterval(iv);
-      var wait=600-(performance.now()-t0);
-      setTimeout(function(){ exit(!!window.__earth3DLive); },wait>0?wait:0);
+      exit(!!window.__earth3DLive);
     }
-  },100);
-  setTimeout(function(){ clearInterval(iv); exit(false); },25000);
+  },80);
+  setTimeout(function(){ clearInterval(iv); exit(!!window.__earth3DLive); },5000);
 })();
 </script>
 
@@ -2085,10 +2096,11 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   },reportProgress,function(){
     loadFinished=true;
     /* a failed download is retried in the background — the boot
-       overlay has its own ~25 s safety exit and the placeholder
-       disc holds the hero meanwhile, so a transient network error
-       must not be the end of the Earth; only when the retries are
-       exhausted is the failure genuine and fallback() runs */
+       overlay lifts on its own short fixed schedule regardless
+       and the placeholder disc holds the hero meanwhile, so a
+       transient network error must not be the end of the Earth;
+       only when the retries are exhausted is the failure genuine
+       and fallback() runs */
     if(loadAttempts<4&&!settled){ setTimeout(loadModel,3000); return; }
     clearTimeout(loadTimer); fallback();
   });
