@@ -5,13 +5,16 @@
   Launch fill completed: mainnet RPC filled in as
   https://rpc.elysium.kinetiq.xyz (officially published, verified live,
   chain ID 99901 confirmed by direct RPC test).
+  $LADDER token fill completed 2026-11-11: token #2 launched on Montra,
+  contract 0x8d99fe0b16ebec93495ad93c824337e46ff9bc84 — displayed in the
+  token band and the Mainnet Contracts list with copy enabled, and the
+  trade link https://montramarkets.xyz/token/0x8d99fe0b16ebec93495ad93c824337e46ff9bc84
+  was verified live (page title "ladder swap ($LADDER) · Montra").
   Remaining launch fills: explorer URL ("Published at launch" — official
   explorer still "Coming soon"), bridge URL ("Published at launch" — no
-  official mainnet bridge published yet), the $LADDER token contract
-  address (not displayed on the site for now — "SOON" in the token
-  section and "Deploying at launch" in Mainnet Contracts), and the four
-  remaining mainnet contract addresses ("Deploying at launch" — WHYPE,
-  Factory, Router, Launchpad; Ladder's own contracts not deployed yet).
+  official mainnet bridge published yet), and the four remaining mainnet
+  contract addresses ("Deploying at launch" — WHYPE, Factory, Router,
+  Launchpad; Ladder's own contracts not deployed yet).
   Do not invent any of those remaining values.
   DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
   Push these 11 files, byte for byte, replacing the old landing page's index.html:
@@ -487,6 +490,11 @@ table.cmp tr:last-child td{border-bottom:none}
 .soon-box .ca{font-family:var(--mono);font-size:1.3rem;letter-spacing:.35em;color:var(--brand-ink);font-weight:700;margin:.3rem 0}
 .soon-box .ca.live{font-size:.8rem;letter-spacing:.02em;line-height:1.55;word-break:break-all}
 .soon-box p{font-size:.82rem}
+.x-post{margin-top:1.4rem;border:1px solid var(--line);border-radius:16px;padding:1.5rem 1.6rem;background:var(--card);box-shadow:var(--shadow-rest)}
+.x-post-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.x-post-head h4{margin:0;font-size:1.05rem;letter-spacing:-.01em;font-weight:600}
+.x-post-head span{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.x-post-text{white-space:pre-line;color:var(--muted);font-size:.97rem;line-height:1.6;margin:1rem 0 1.1rem;overflow-wrap:anywhere}
 
 /* ============ FAQ ============ */
 .faq{padding:6rem 0;background:var(--bg-soft);border-top:1px solid var(--line-soft)}
@@ -1078,7 +1086,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="addr-row"><span class="an">WHYPE</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
       <div class="addr-row"><span class="an">Factory</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
       <div class="addr-row"><span class="an">Router</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
-      <div class="addr-row"><span class="an">$LADDER</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
+      <div class="addr-row"><span class="an">$LADDER</span><code>0x8d99fe0b16ebec93495ad93c824337e46ff9bc84</code><button class="copy-btn" data-copy="0x8d99fe0b16ebec93495ad93c824337e46ff9bc84">Copy</button></div>
       <div class="addr-row"><span class="an">Launchpad</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
     </div>
     <p class="rv" style="color:var(--faint);font-size:.85rem;margin-top:1rem">Verify before you trade — look-alike tokens exist. These are the Elysium Mainnet contracts; addresses are published here at launch. Contracts are unaudited.</p>
@@ -1100,14 +1108,33 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div>
         <p class="eyebrow" style="color:var(--brand-ink)">The Ladder Token</p>
         <h3>One token, climbing with Ladder</h3>
-        <p>The Ladder token is $LADDER — live on Elysium Mainnet, launched on Ascend and trading on its HYPE curve.</p>
+        <p>The Ladder token is $LADDER — live on Elysium Mainnet, launched on Montra and trading in its own HYPE pool.</p>
       </div>
       <div class="soon-box">
         <div class="ticker">$LADDER</div>
-        <div class="ca">SOON</div>
-        <p>Contract address<br />Beware of look-alike tokens using the Ladder name.</p>
-        <button class="copy-btn" disabled aria-disabled="true" title="Available at launch" style="margin-top:.9rem">Copy</button>
+        <div class="ca live">0x8d99fe0b16ebec93495ad93c824337e46ff9bc84</div>
+        <p>Contract address · Launched on Montra · Elysium Mainnet<br />Beware of look-alike tokens using the Ladder name.</p>
+        <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;align-items:center;margin-top:.9rem">
+          <button class="copy-btn" data-copy="0x8d99fe0b16ebec93495ad93c824337e46ff9bc84">Copy CA</button>
+          <a class="btn btn-primary btn-sm" href="https://montramarkets.xyz/token/0x8d99fe0b16ebec93495ad93c824337e46ff9bc84" target="_blank" rel="noopener">Trade on Montra ↗</a>
+        </div>
       </div>
+    </div>
+
+    <div class="x-post rv">
+      <div class="x-post-head">
+        <h4>Launch announcement for X</h4>
+        <span>Ready to post</span>
+      </div>
+      <p class="x-post-text">$LADDER is live on Elysium Mainnet — launched on Montra.
+
+Ladder is the DEX built for Elysium: Swap · Pools · Earn · Launchpad. Earn is live now.
+
+CA: 0x8d99fe0b16ebec93495ad93c824337e46ff9bc84
+Trade: https://montramarkets.xyz/token/0x8d99fe0b16ebec93495ad93c824337e46ff9bc84
+
+Verify the CA — beware of look-alikes.</p>
+      <button class="copy-btn" data-copy="$LADDER is live on Elysium Mainnet — launched on Montra.&#10;&#10;Ladder is the DEX built for Elysium: Swap · Pools · Earn · Launchpad. Earn is live now.&#10;&#10;CA: 0x8d99fe0b16ebec93495ad93c824337e46ff9bc84&#10;Trade: https://montramarkets.xyz/token/0x8d99fe0b16ebec93495ad93c824337e46ff9bc84&#10;&#10;Verify the CA — beware of look-alikes.">Copy post</button>
     </div>
   </div>
 </section>
@@ -1560,7 +1587,8 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   document.querySelectorAll('.copy-btn').forEach(function(btn){
     btn.addEventListener('click',function(){
       var txt=btn.getAttribute('data-copy');
-      function done(){ btn.textContent='Copied ✓'; btn.classList.add('done'); setTimeout(function(){ btn.textContent='Copy'; btn.classList.remove('done'); },1600); }
+      var orig=btn.textContent;
+      function done(){ btn.textContent='Copied ✓'; btn.classList.add('done'); setTimeout(function(){ btn.textContent=orig; btn.classList.remove('done'); },1600); }
       if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(done); }
       else{
         var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select();
