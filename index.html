@@ -1,44 +1,29 @@
 <!doctype html>
 <!--
-  MAINNET VERSION — Elysium mainnet is now officially LIVE (chain 99901);
-  this is the launch build, ready to push.
-  Launch fill completed: mainnet RPC filled in as
-  https://rpc.elysium.kinetiq.xyz (officially published, verified live,
-  chain ID 99901 confirmed by direct RPC test).
-  $LADDER token fill completed 2026-11-11: token #2 launched on Montra,
-  contract 0x8d99fe0b16ebec93495ad93c824337e46ff9bc84 — displayed in the
-  token band and the Mainnet Contracts list with copy enabled, and the
-  trade link https://montramarkets.xyz/token/0x8d99fe0b16ebec93495ad93c824337e46ff9bc84
-  was verified live (page title "ladder swap ($LADDER) · Montra").
-  Remaining launch fills: explorer URL ("Published at launch" — official
-  explorer still "Coming soon"), bridge URL ("Published at launch" — no
-  official mainnet bridge published yet), and the four remaining mainnet
-  contract addresses ("Deploying at launch" — WHYPE, Factory, Router,
-  Launchpad; Ladder's own contracts not deployed yet).
-  Do not invent any of those remaining values.
-  DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file, nothing compressed.
-  Push these 11 files, byte for byte, replacing the old landing page's index.html:
-    index.html                        140,879 bytes (this file, manifest comment included)
-    sw.js                               2,122 bytes (site root — Earth cache service worker; index.html registers it)
-    assets/earth_0_zhtn.glb        23,342,728 bytes
-    assets/earth_clouds_4096.png    9,848,258 bytes (no longer fetched by the page — the Canvas 2D fallback globe was removed; the GLB embeds its own maps. Kept in the repo, harmless)
-    assets/earth_day_color_4096.jpg 2,693,045 bytes (no longer fetched by the page — same removal as above. Kept in the repo, harmless)
-    assets/three.min.js               865,452 bytes
-    assets/ladder-star.png             90,703 bytes
-    assets/ladder-star-alpha.png       60,365 bytes
-    assets/ladder-star-dark.png        60,366 bytes
-    assets/favicon-512.png             79,049 bytes (new 3D star favicon)
-    assets/apple-touch-icon.png        17,469 bytes (same 3D star, 180px)
-  Every file is under GitHub's 25 MB web-upload limit; all references are
-  relative (assets/...), so the page runs identically from the repo root.
-  Do NOT touch CNAME or tracker.html in the repo.
+  SOLANA VERSION — Ladder lives on Solana (full migration build).
+  Landing copy, chain facts and token references describe the Solana
+  build: Phantom wallet connect, swaps routed through Jupiter,
+  liquidity on Raydium and Orca, fees in SOL.
+  $LADDER relaunches on Solana via pump.fun — no mint address exists
+  yet, so the token band and the Solana Addresses list show
+  "published at launch" for $LADDER. Do not invent a mint address.
+  wSOL (So11111111111111111111111111111111111111112) and USDC
+  (EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v) are the canonical
+  Solana mints, shown with copy enabled.
+  Ladder Earn (earn.ladderswap.trade) is a separate app, rebuilt for
+  Solana separately from this landing page.
+  Boot loader exits on a ~1.4s timer; the hero is only the 4K GLB
+  Earth (assets/earth_0_zhtn.glb). App links stay disabled with
+  "Soon" labels until the final app ships.
+  DEPLOY SET — GitHub Pages (laddergit/ladder-landing), multi-file,
+  nothing compressed. Do NOT touch CNAME or tracker.html in the repo.
 -->
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="dark light" />
-<meta name="description" content="Ladder is the decentralized exchange on Elysium — Kinetiq's Arbitrum Orbit L2 for the Hyperliquid ecosystem. Swap, provide liquidity, launch tokens and climb, rung by rung." />
+<meta name="description" content="Ladder is the decentralized exchange on Solana. Swap at the best route through Jupiter, provide liquidity on Raydium and Orca, launch tokens and climb, rung by rung." />
 <!-- start the 23 MB Earth model downloading immediately, in parallel
      with parsing, so the blue Earth is ready as early as the network
      allows; on repeat visits the service worker (sw.js) serves it
@@ -84,7 +69,7 @@ html.booting body{overflow:hidden}
 </style>
 <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
-<title>Ladder — The DEX on Elysium</title>
+<title>Ladder — The DEX on Solana</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -739,7 +724,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <a href="#services">Ecosystem</a>
       <a href="#climb">The Climb</a>
       <a href="#compare">Compare</a>
-      <a href="#contracts">Contracts</a>
+      <a href="#contracts">Addresses</a>
       <a href="#roadmap">Roadmap</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -752,7 +737,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         </span>
         <span class="dl-word" aria-hidden="true"><b id="dlWord">Night</b></span>
       </button>
-      <span class="chain-pill"><i></i> Elysium Mainnet · 99901</span>
+      <span class="chain-pill"><i></i> Solana Mainnet · Live</span>
       <span class="btn btn-primary btn-sm launch-soon" aria-disabled="true" title="Coming soon">Launch App <span class="soon-tag">Soon</span></span>
       <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
@@ -761,7 +746,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <a href="#services">Ecosystem</a>
     <a href="#climb">The Climb</a>
     <a href="#compare">Compare</a>
-    <a href="#contracts">Contracts</a>
+    <a href="#contracts">Addresses</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#faq">FAQ</a>
     <a href="https://earn.ladderswap.trade" target="_blank" rel="noopener">Ladder Earn ↗</a>
@@ -800,9 +785,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <!-- Stage 0 -->
     <section class="stage on" data-stage="0">
       <div class="stage-in">
-        <p class="kicker">The DEX on Elysium</p>
+        <p class="kicker">The DEX on Solana</p>
         <h1>Swap. Provide.<br />Stay <span class="mark">Ahead<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span>.</h1>
-        <p class="sub">One decentralized exchange for the Hyperliquid ecosystem — swap at the market, earn from the pools, launch a token, and let ladder orders climb to your price. Gas in HYPE, keys in your hands.</p>
+        <p class="sub">One decentralized exchange on Solana — swap at the best route, earn from the pools, launch a token, and let ladder orders climb to your price. Fees in SOL, keys in your hands.</p>
         <div class="cta-row">
           <span class="btn btn-light launch-soon" aria-disabled="true" title="Coming soon">Launch the App <span class="soon-tag">Soon</span></span>
           <a class="btn btn-outline" href="#services">Explore the Ecosystem</a>
@@ -813,13 +798,13 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <!-- Stage 1 -->
     <section class="stage" data-stage="1">
       <div class="stage-in">
-        <p class="kicker">Built on Elysium</p>
+        <p class="kicker">Built on Solana</p>
         <h2>See every pool. Prove every trade. <span class="mark">Yours<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span> by design.</h2>
-        <p class="sub">Ladder lives on Elysium, Kinetiq's Arbitrum Orbit L2 built to accelerate Hyperliquid. Every quote comes straight from pool reserves, every action is signed by your own wallet, every result lands on a public explorer.</p>
+        <p class="sub">Ladder lives on Solana, the high-performance L1 where blocks land about every 400 milliseconds. Quotes route through Jupiter across the deepest pools, every action is signed by your own wallet, every result lands on a public explorer.</p>
         <div class="mini-stats">
-          <div><b>99901</b><span>Elysium Mainnet</span></div>
-          <div><b>HYPE</b><span>Gas Token</span></div>
-          <div><b>0.3%</b><span>Swap Fee to LPs</span></div>
+          <div><b>~400ms</b><span>Solana Block Time</span></div>
+          <div><b>SOL</b><span>Gas Token</span></div>
+          <div><b>Jupiter</b><span>Swap Routing</span></div>
         </div>
       </div>
     </section>
@@ -861,7 +846,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="stage-in">
         <p class="kicker">The Comparison</p>
         <h2>Full coverage. <span class="mark">One home<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span> for liquidity.</h2>
-        <p class="sub">Fragmented tools mean fragmented liquidity. Ladder keeps the whole flow — from first swap to launched token — under one roof, on the chain built for it.</p>
+        <p class="sub">Fragmented tools mean fragmented liquidity. Ladder keeps the whole flow — from first swap to launched token — under one roof, on Solana.</p>
         <div class="cta-row"><a class="btn btn-outline" href="#compare">Compare ↓</a></div>
       </div>
     </section>
@@ -871,7 +856,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="stage-in">
         <p class="kicker">Explore the Ladder Ecosystem</p>
         <h2>Mainnet is <span class="mark">live<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span>.<br />Start climbing today.</h2>
-        <p class="sub">Elysium Mainnet is live — and Ladder is live with it on chain 99901. Connect your wallet and take your first step now.</p>
+        <p class="sub">Solana Mainnet is live — and Ladder is rebuilding natively on it. Connect Phantom and take your first step.</p>
         <div class="cta-row">
           <span class="btn btn-light launch-soon" aria-disabled="true" title="Coming soon">Start Climbing <span class="soon-tag">Soon</span></span>
           <a class="btn btn-outline" href="#clock">Mainnet Status ↓</a>
@@ -891,12 +876,12 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <p class="lede rv">Every trader climbs the same staircase. Here is where each Ladder service cuts in, from the first wallet connection to a position that keeps earning.</p>
 
     <div class="climb-list rv">
-      <div class="climb-row"><span class="num">1</span><h3>Connect</h3><p>Link your wallet and Ladder adds the Elysium network for you — chain 99901, gas in HYPE, no manual RPC forms.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">2</span><h3>Fund</h3><p>Fund your wallet with HYPE on Elysium Mainnet — bridge or transfer HYPE in, and every transaction from there pays gas in HYPE.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">3</span><h3>Swap</h3><p>Trade any pair at the market price, quoted live from pool reserves through the router — slippage set by you, one signature.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">4</span><h3>Provide</h3><p>Deposit a pair into a pool, receive LP tokens, and earn your share of the 0.3% fee on every routed swap. Remove anytime.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">5</span><h3>Launch</h3><p>Create a token on the bonding-curve launchpad. When the curve completes, liquidity graduates straight into a Ladder pool.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">6</span><h3>Climb</h3><p>Put LP positions to work in Ladder Earn, and place ladder orders that split one trade across a staircase of prices, filling rung by rung.</p><span class="tag soon">Earn Live · Orders Phase 02</span></div>
+      <div class="climb-row"><span class="num">1</span><h3>Connect</h3><p>Connect Phantom or any Solana wallet — no network to add, no chain to switch. On Solana, your wallet is already home.</p><span class="tag live">Live</span></div>
+      <div class="climb-row"><span class="num">2</span><h3>Fund</h3><p>Fund your wallet with SOL — buy it in Phantom or transfer it in. Every transaction on Solana pays its fee in SOL, a fraction of a cent at a time.</p><span class="tag live">Live</span></div>
+      <div class="climb-row"><span class="num">3</span><h3>Swap</h3><p>Trade any pair at the best route Jupiter finds across Solana's pools — slippage set by you, one signature.</p><span class="tag live">Live</span></div>
+      <div class="climb-row"><span class="num">4</span><h3>Provide</h3><p>Deposit a pair into a Raydium or Orca pool from Earn, and earn your share of the fees on every routed swap. Withdraw anytime.</p><span class="tag live">Live</span></div>
+      <div class="climb-row"><span class="num">5</span><h3>Launch</h3><p>Launch a token on a bonding curve through pump.fun. When the curve completes, liquidity graduates straight into a live pool.</p><span class="tag live">Live</span></div>
+      <div class="climb-row"><span class="num">6</span><h3>Climb</h3><p>Put LP positions to work in Ladder Earn, and place ladder orders that split one trade across a staircase of prices, filling rung by rung.</p><span class="tag soon">Earn on Solana · Orders Phase 02</span></div>
     </div>
   </div>
 </section>
@@ -906,14 +891,14 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   <div class="wrap">
     <p class="eyebrow rv">One Ecosystem, One Core</p>
     <h2 class="sec rv">Every layer of trading,<br />pulled into one core.</h2>
-    <p class="lede rv">Swap, provide liquidity, launch, earn — one integrated lifecycle on Elysium. Each service feeds the same pools, so liquidity deepens instead of scattering.</p>
+    <p class="lede rv">Swap, provide liquidity, launch, earn — one integrated lifecycle on Solana. Each service feeds the same pools, so liquidity deepens instead of scattering.</p>
 
     <div class="core-diagram rv">
       <div class="core-col">
         <div class="core-node"><b>Swap</b><span>Instant AMM trades, quoted from reserves</span></div>
         <div class="core-node"><b>Launchpad</b><span>Bonding-curve tokens that graduate to pools</span></div>
       </div>
-      <div class="core-hub"><div><span>Ladder Core</span><b>Elysium<br />Liquidity</b></div></div>
+      <div class="core-hub"><div><span>Ladder Core</span><b>Solana<br />Liquidity</b></div></div>
       <div class="core-col">
         <div class="core-node"><b>Pools</b><span>LP tokens earning the 0.3% swap fee</span></div>
         <div class="core-node"><b>Earn</b><span>LP positions put to work</span></div>
@@ -932,7 +917,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <div class="svc-grid">
       <span class="svc rv svc-off" aria-disabled="true" title="Coming soon">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4"/><path d="M3 8h14"/><path d="M17 20l4-4-4-4"/><path d="M21 16H7"/></svg></span>
-        <h3>Swap</h3><p>Trade any token pair on Elysium at market price. Live pool quotes, your own slippage setting, HYPE / WHYPE routing built in.</p>
+        <h3>Swap</h3><p>Trade any token pair on Solana at the best available route. Quotes powered by Jupiter, your own slippage setting, SOL / wSOL routing built in.</p>
         <span class="go">Open Swap <span class="st soon">Soon</span></span>
       </span>
       <span class="svc rv svc-off" style="--d:.06s" aria-disabled="true" title="Coming soon">
@@ -942,13 +927,13 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       </span>
       <span class="svc rv svc-off" style="--d:.12s" aria-disabled="true" title="Coming soon">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L20 4"/><path d="M14 4h6v6"/><path d="M4 14v6h6"/></svg></span>
-        <h3>Launchpad</h3><p>Launch a token on a bonding curve. Graduations seed liquidity directly into Ladder's own router — the built-in source of new pools.</p>
+        <h3>Launchpad</h3><p>Launch a token on a bonding curve via pump.fun. Graduations seed liquidity directly into a live Raydium pool — the built-in source of new markets.</p>
         <span class="go">Open Launchpad <span class="st soon">Soon</span></span>
       </span>
       <a class="svc rv" style="--d:.18s" href="https://earn.ladderswap.trade" target="_blank" rel="noopener">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>
-        <h3>Earn</h3><p>Markets, portfolio and an aggregator that routes across Elysium's deepest pools on mainnet — venues register once, quotes compare live.</p>
-        <span class="go">Open Earn <span class="st">Live · Mainnet</span></span>
+        <h3>Earn</h3><p>Markets, portfolio and an aggregator that routes across Solana's deepest pools — swaps through Jupiter, liquidity on Raydium and Orca, quotes compared live.</p>
+        <span class="go">Open Earn <span class="st">Live · Solana</span></span>
       </a>
     </div>
   </div>
@@ -966,12 +951,12 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         <thead><tr><th>Dimension</th><th class="hl">Ladder</th><th>Separate DEX Tools</th><th>Build It Yourself</th></tr></thead>
         <tbody>
           <tr><td>Coverage</td><td class="hl" data-h="Ladder">Swap, pools, earn &amp; launchpad</td><td data-h="Separate tools">One tool each</td><td data-h="Build it">Build each piece</td></tr>
-          <tr><td>Entry cost</td><td class="hl" data-h="Ladder">Gas in HYPE only</td><td data-h="Separate tools">Fees &amp; accounts per tool</td><td data-h="Build it">Months of engineering</td></tr>
+          <tr><td>Entry cost</td><td class="hl" data-h="Ladder">Fees in SOL only</td><td data-h="Separate tools">Fees &amp; accounts per tool</td><td data-h="Build it">Months of engineering</td></tr>
           <tr><td>Time to first trade</td><td class="hl" data-h="Ladder">Minutes — connect &amp; swap</td><td data-h="Separate tools">Days of setup</td><td data-h="Build it">Months</td></tr>
           <tr><td>Single interface</td><td class="hl yes" data-h="Ladder">✓ One app</td><td class="no" data-h="Separate tools">✕</td><td class="mid" data-h="Build it">Eventually</td></tr>
           <tr><td>Launches graduate into pools</td><td class="hl yes" data-h="Ladder">✓ By design</td><td class="no" data-h="Separate tools">✕</td><td class="no" data-h="Build it">✕</td></tr>
           <tr><td>Self-custody throughout</td><td class="hl yes" data-h="Ladder">✓ You sign everything</td><td class="mid" data-h="Separate tools">Varies</td><td class="yes" data-h="Build it">✓</td></tr>
-          <tr><td>Native to Elysium &amp; HYPE</td><td class="hl yes" data-h="Ladder">✓ Built for it</td><td class="no" data-h="Separate tools">✕</td><td class="no" data-h="Build it">✕</td></tr>
+          <tr><td>Native to Solana &amp; SOL</td><td class="hl yes" data-h="Ladder">✓ Built for it</td><td class="no" data-h="Separate tools">✕</td><td class="no" data-h="Build it">✕</td></tr>
         </tbody>
       </table>
     </div>
@@ -981,24 +966,24 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 <!-- ================= MAINNET STATUS ================= -->
 <section class="clock" id="clock">
   <div class="wrap">
-    <p class="eyebrow rv">Elysium Mainnet · Live</p>
+    <p class="eyebrow rv">Solana Mainnet · Live</p>
     <h2 class="sec rv">Mainnet Is Live</h2>
-    <p class="lede rv">Ladder is live on Elysium Mainnet — same interface, same pool model, real assets. Swap, provide liquidity, launch and earn, all settled on chain 99901 with gas in HYPE.</p>
+    <p class="lede rv">Ladder is rebuilding natively on Solana — same four products, same pool-first model, real assets. Swap, provide liquidity, launch and earn, all settled on Solana with fees in SOL.</p>
 
     <div class="clock-grid rv">
-      <div class="clock-cell"><b>99901</b><span>Chain ID · Elysium Mainnet</span></div>
-      <div class="clock-cell"><b>0.3%</b><span>Fee on every swap, shared by LPs</span></div>
-      <div class="clock-cell"><b>HYPE</b><span>Gas token across the ecosystem</span></div>
-      <div class="clock-cell"><b>Live</b><span>Elysium Mainnet · Now live</span></div>
+      <div class="clock-cell"><b>Live</b><span>Solana Mainnet · Network status</span></div>
+      <div class="clock-cell"><b>~400ms</b><span>Block time on Solana</span></div>
+      <div class="clock-cell"><b>SOL</b><span>Gas token across the ecosystem</span></div>
+      <div class="clock-cell"><b>$LADDER</b><span>Relaunching on pump.fun</span></div>
     </div>
 
-    <div class="countdown rv" role="status" aria-label="Elysium mainnet status">
-      <div><div class="cd-label">Mainnet Status · Live</div><div style="color:var(--muted);font-size:.9rem;margin-top:.3rem">Elysium Mainnet is live · Ladder is live on chain 99901</div></div>
+    <div class="countdown rv" role="status" aria-label="Solana mainnet status">
+      <div><div class="cd-label">Mainnet Status · Live</div><div style="color:var(--muted);font-size:.9rem;margin-top:.3rem">Solana Mainnet is live · Ladder is rebuilding natively on Solana</div></div>
       <div class="cd-nums">
-        <div><b>99901</b><span>Chain ID</span></div>
-        <div><b>HYPE</b><span>Gas Token</span></div>
+        <div><b>~400ms</b><span>Block Time</span></div>
+        <div><b>SOL</b><span>Gas Token</span></div>
         <div><b>Live</b><span>Status</span></div>
-        <div><b>$LADDER</b><span>Token</span></div>
+        <div><b>$LADDER</b><span>pump.fun · Soon</span></div>
       </div>
     </div>
   </div>
@@ -1017,32 +1002,32 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
         <div class="panel-head"><img src="assets/ladder-star-alpha.png" alt="" /><b>ladder · Swap</b><span class="ph-tag">UI Preview</span></div>
         <div class="swap-box">
           <label>Sell</label>
-          <div class="swap-row"><input id="swapIn" type="number" min="0" step="0.1" value="1.0" inputmode="decimal" aria-label="HYPE amount to sell" /><span class="tok"><i>H</i> HYPE</span></div>
+          <div class="swap-row"><input id="swapIn" type="number" min="0" step="0.1" value="1.0" inputmode="decimal" aria-label="SOL amount to sell" /><span class="tok"><i>S</i> SOL</span></div>
         </div>
         <div class="flip" aria-hidden="true">⇅</div>
         <div class="swap-box">
-          <label>Buy · Quoted from pool reserves</label>
-          <div class="swap-row"><input id="swapOut" type="text" value="0.0" readonly aria-label="Estimated USD received" /><span class="tok"><i>$</i> USD</span></div>
+          <label>Buy · Quoted by Jupiter</label>
+          <div class="swap-row"><input id="swapOut" type="text" value="0.0" readonly aria-label="Estimated USDC received" /><span class="tok"><i>$</i> USDC</span></div>
         </div>
-        <div class="swap-meta"><span>Slippage <b>0.5%</b></span><span>Fee <b>0.3%</b></span><span>Route <b>WHYPE → USD</b></span></div>
+        <div class="swap-meta"><span>Slippage <b>0.5%</b></span><span>Routing <b>Jupiter</b></span><span>Route <b>SOL → USDC</b></span></div>
         <span class="btn btn-primary launch-soon" aria-disabled="true" title="Coming soon">Swap in the Real App <span class="soon-tag">Soon</span></span>
-        <p class="panel-note">Preview with an illustrative rate. Live quotes come from the pool in the app.</p>
+        <p class="panel-note">Preview with an illustrative rate. Live quotes come from Jupiter in the app.</p>
       </div>
 
       <!-- Ladder order simulator -->
       <div class="panel rv" style="--d:.08s">
         <div class="panel-head"><img src="assets/ladder-star-alpha.png" alt="" /><b>Ladder Orders</b><span class="ph-tag">Phase 02 · Simulator</span></div>
         <div class="sim-controls">
-          <label>Total amount <output id="simAmtOut">120 HYPE</output><input type="range" id="simAmt" min="10" max="500" step="10" value="120" /></label>
+          <label>Total amount <output id="simAmtOut">120 SOL</output><input type="range" id="simAmt" min="10" max="500" step="10" value="120" /></label>
           <label>Number of rungs <output id="simRungsOut">5</output><input type="range" id="simRungs" min="2" max="8" step="1" value="5" /></label>
-          <label>From price <output id="simFromOut">$30</output><input type="range" id="simFrom" min="10" max="45" step="1" value="30" /></label>
-          <label>To price <output id="simToOut">$38</output><input type="range" id="simTo" min="32" max="80" step="1" value="38" /></label>
+          <label>From price <output id="simFromOut">$150</output><input type="range" id="simFrom" min="100" max="175" step="1" value="150" /></label>
+          <label>To price <output id="simToOut">$185</output><input type="range" id="simTo" min="160" max="260" step="1" value="185" /></label>
         </div>
         <div class="rungs" id="rungs" aria-hidden="true"></div>
         <div class="sim-out">
-          <div><b id="simAvg">$34.00</b><span>Average entry</span></div>
-          <div><b id="simPer">24 HYPE</b><span>Per rung</span></div>
-          <div><b id="simTotal">120 HYPE</b><span>Total</span></div>
+          <div><b id="simAvg">$167.50</b><span>Average entry</span></div>
+          <div><b id="simPer">24 SOL</b><span>Per rung</span></div>
+          <div><b id="simTotal">120 SOL</b><span>Total</span></div>
         </div>
         <p class="panel-note">An illustration of how one order splits across price levels. It does not place trades or quote live prices. Ladder Orders arrive in Phase 02.</p>
       </div>
@@ -1056,10 +1041,10 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <p class="eyebrow rv">No Consultants. No Manual Setup.</p>
     <h2 class="sec rv">From zero to trading in 5 steps</h2>
     <div class="steps-grid rv">
-      <div class="step"><span class="n">01</span><h3>Connect a wallet</h3><p>Open the app and connect. Ladder adds Elysium Mainnet to your wallet automatically.</p></div>
-      <div class="step"><span class="n">02</span><h3>Get HYPE</h3><p>Fund your wallet with HYPE on Elysium Mainnet — gas for everything that follows.</p></div>
+      <div class="step"><span class="n">01</span><h3>Connect a wallet</h3><p>Open the app and connect Phantom. No network to add, no chain to switch — Solana is your wallet's home.</p></div>
+      <div class="step"><span class="n">02</span><h3>Get SOL</h3><p>Fund your wallet with SOL — it pays the fee for everything that follows, a fraction of a cent per transaction.</p></div>
       <div class="step"><span class="n">03</span><h3>Make your first swap</h3><p>Pick a pair, check the pool quote, set slippage, sign once. Done.</p></div>
-      <div class="step"><span class="n">04</span><h3>Seed a pool</h3><p>Deposit a pair and start earning your share of the 0.3% fee on every swap.</p></div>
+      <div class="step"><span class="n">04</span><h3>Seed a pool</h3><p>Deposit a pair into a Raydium or Orca pool and start earning your share of the swap fees.</p></div>
       <div class="step"><span class="n">05</span><h3>Launch or climb</h3><p>Launch a token, or put your LP positions to work in Earn.</p></div>
     </div>
   </div>
@@ -1068,28 +1053,27 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 <!-- ================= CHAIN FACTS + CONTRACTS ================= -->
 <section class="facts" id="contracts">
   <div class="wrap">
-    <p class="eyebrow rv">Built on Elysium, End to End</p>
+    <p class="eyebrow rv">Built on Solana, End to End</p>
     <h2 class="sec rv">Under the hood</h2>
-    <p class="lede rv">Ladder settles every swap, pool and order on Elysium — from wallet signature to explorer receipt. Network parameters straight from the chain itself.</p>
+    <p class="lede rv">Ladder settles every swap, pool and order on Solana — from wallet signature to explorer receipt. Network parameters straight from the chain itself.</p>
 
     <div class="fact-grid rv">
-      <div class="fact"><span>Network</span><b>Elysium Mainnet</b><p>Arbitrum Orbit L2 by Kinetiq, for the Hyperliquid ecosystem.</p></div>
-      <div class="fact"><span>Chain ID</span><b>99901</b><p>The chain Ladder is live on — your wallet switches automatically.</p></div>
-      <div class="fact"><span>Gas Token</span><b>HYPE</b><p>Every transaction on Elysium pays gas in HYPE, 18 decimals.</p></div>
-      <div class="fact"><span>RPC</span><b style="font-size:.85rem">https://rpc.elysium.kinetiq.xyz</b><p>The official Elysium Mainnet RPC — live on chain 99901.</p></div>
-      <div class="fact"><span>Explorer</span><b style="font-size:1rem">Published at launch</b><p>The official Elysium Mainnet explorer — published at launch. Follow every swap, pool and deployment as it lands on chain.</p></div>
-      <div class="fact"><span>Bridge</span><b style="font-size:1rem">Published at launch</b><p>The official bridge to Elysium Mainnet — published at launch.</p></div>
+      <div class="fact"><span>Network</span><b>Solana Mainnet</b><p>High-performance layer-1 blockchain — the chain Ladder now calls home.</p></div>
+      <div class="fact"><span>Block Time</span><b>~400 ms</b><p>Solana produces a new block roughly every 400 milliseconds — trades settle fast.</p></div>
+      <div class="fact"><span>Gas Token</span><b>SOL</b><p>Every transaction on Solana pays its fee in SOL, 9 decimals.</p></div>
+      <div class="fact"><span>RPC</span><b style="font-size:.85rem">https://api.mainnet-beta.solana.com</b><p>The public Solana RPC endpoint — Ladder reads pool state straight from the chain.</p></div>
+      <div class="fact"><span>Explorer</span><b style="font-size:1rem">explorer.solana.com</b><p>The Solana Explorer — follow every swap, pool and program as it lands on chain.</p></div>
+      <div class="fact"><span>Wallet</span><b style="font-size:1rem">Phantom &amp; Solana wallets</b><p>Connect any Solana wallet — no network to add, no chain to switch, keys stay with you.</p></div>
     </div>
 
-    <h3 class="rv" style="font-size:1.15rem;letter-spacing:-.01em;margin:2.2rem 0 0">Mainnet Contracts</h3>
-    <div class="addr-list rv" aria-label="Mainnet contract addresses">
-      <div class="addr-row"><span class="an">WHYPE</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
-      <div class="addr-row"><span class="an">Factory</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
-      <div class="addr-row"><span class="an">Router</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
-      <div class="addr-row"><span class="an">$LADDER</span><code>0x8d99fe0b16ebec93495ad93c824337e46ff9bc84</code><button class="copy-btn" data-copy="0x8d99fe0b16ebec93495ad93c824337e46ff9bc84">Copy</button></div>
-      <div class="addr-row"><span class="an">Launchpad</span><code>Deploying at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
+    <h3 class="rv" style="font-size:1.15rem;letter-spacing:-.01em;margin:2.2rem 0 0">Solana Mints &amp; Programs</h3>
+    <div class="addr-list rv" aria-label="Solana mint and program addresses">
+      <div class="addr-row"><span class="an">wSOL</span><code>So11111111111111111111111111111111111111112</code><button class="copy-btn" data-copy="So11111111111111111111111111111111111111112">Copy</button></div>
+      <div class="addr-row"><span class="an">USDC</span><code>EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</code><button class="copy-btn" data-copy="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">Copy</button></div>
+      <div class="addr-row"><span class="an">$LADDER</span><code>Launching on pump.fun — mint published at launch</code><button class="copy-btn" disabled aria-disabled="true" title="Available at launch">At Launch</button></div>
+      <div class="addr-row"><span class="an">Ladder Programs</span><code>In development on Solana</code><button class="copy-btn" disabled aria-disabled="true" title="In development">Soon</button></div>
     </div>
-    <p class="rv" style="color:var(--faint);font-size:.85rem;margin-top:1rem">Verify before you trade — look-alike tokens exist. These are the Elysium Mainnet contracts; addresses are published here at launch. Contracts are unaudited.</p>
+    <p class="rv" style="color:var(--faint);font-size:.85rem;margin-top:1rem">Verify before you trade — look-alike tokens exist. wSOL and USDC above are the canonical Solana mints; the $LADDER mint address is published here the moment it launches on pump.fun. Programs are unaudited.</p>
   </div>
 </section>
 
@@ -1099,42 +1083,40 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <p class="eyebrow rv">Roadmap</p>
     <h2 class="sec rv">The climb ahead</h2>
     <div class="road-grid rv">
-      <div class="phase"><span class="ph">Phase 01</span><h3>Mainnet Launch</h3><p>Ladder's AMM contracts — Factory, Router, WHYPE routing — live on Elysium Mainnet, with swap, liquidity and the launchpad open in the app.</p><span class="st">Live · Mainnet</span></div>
+      <div class="phase"><span class="ph">Phase 01</span><h3>Solana Migration</h3><p>Ladder rebuilt natively on Solana — Phantom connect, Jupiter-powered swaps, Raydium and Orca liquidity in Earn, and the $LADDER relaunch on pump.fun.</p><span class="st">In Progress</span></div>
       <div class="phase"><span class="ph">Phase 02</span><h3>Ladder Limit Orders</h3><p>The namesake feature: multi-rung limit orders that split one trade across a staircase of prices and fill gradually as the market moves through each level.</p><span class="st next">Next</span></div>
-      <div class="phase"><span class="ph">Phase 03</span><h3>Mainnet Growth</h3><p>Ladder is live on Elysium Mainnet with the same interface and pool model on real assets — with aggregator routing across the chain's deepest pools through Ladder Earn.</p><span class="st">Live · Mainnet</span></div>
+      <div class="phase"><span class="ph">Phase 03</span><h3>Solana Growth</h3><p>Ladder grows on Solana with the same interface and pool model on real assets — aggregator routing across the chain's deepest pools through Ladder Earn, powered by Jupiter.</p><span class="st next">Ahead</span></div>
     </div>
 
     <div class="token-band rv">
       <div>
         <p class="eyebrow" style="color:var(--brand-ink)">The Ladder Token</p>
         <h3>One token, climbing with Ladder</h3>
-        <p>The Ladder token is $LADDER — live on Elysium Mainnet, launched on Montra and trading in its own HYPE pool.</p>
+        <p>The Ladder token is $LADDER — relaunching on Solana through pump.fun. The old chain is abandoned; the only real $LADDER is the one whose mint address is published here.</p>
       </div>
       <div class="soon-box">
         <div class="ticker">$LADDER</div>
-        <div class="ca live">0x8d99fe0b16ebec93495ad93c824337e46ff9bc84</div>
-        <p>Contract address · Launched on Montra · Elysium Mainnet<br />Beware of look-alike tokens using the Ladder name.</p>
+        <div class="ca live">Mint address — published at launch</div>
+        <p>Launching on pump.fun · Solana Mainnet<br />Beware of look-alike tokens using the Ladder name — any $LADDER mint not published here is not ours.</p>
         <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;align-items:center;margin-top:.9rem">
-          <button class="copy-btn" data-copy="0x8d99fe0b16ebec93495ad93c824337e46ff9bc84">Copy CA</button>
-          <a class="btn btn-primary btn-sm" href="https://montramarkets.xyz/token/0x8d99fe0b16ebec93495ad93c824337e46ff9bc84" target="_blank" rel="noopener">Trade on Montra ↗</a>
+          <span class="btn btn-primary btn-sm launch-soon" aria-disabled="true" title="Coming soon">Launching on pump.fun <span class="soon-tag">Soon</span></span>
         </div>
       </div>
     </div>
 
     <div class="x-post rv">
       <div class="x-post-head">
-        <h4>Launch announcement for X</h4>
+        <h4>Relaunch announcement for X</h4>
         <span>Ready to post</span>
       </div>
-      <p class="x-post-text">$LADDER is live on Elysium Mainnet — launched on Montra.
+      <p class="x-post-text">$LADDER is coming to Solana.
 
-Ladder is the DEX built for Elysium: Swap · Pools · Earn · Launchpad. Earn is live now.
+Ladder is rebuilding natively on Solana: Swap · Pools · Earn · Launchpad — swaps via Jupiter, liquidity on Raydium &amp; Orca, wallet by Phantom.
 
-CA: 0x8d99fe0b16ebec93495ad93c824337e46ff9bc84
-Trade: https://montramarkets.xyz/token/0x8d99fe0b16ebec93495ad93c824337e46ff9bc84
+The token launches on pump.fun. The mint address will be published on ladderswap.trade first.
 
-Verify the CA — beware of look-alikes.</p>
-      <button class="copy-btn" data-copy="$LADDER is live on Elysium Mainnet — launched on Montra.&#10;&#10;Ladder is the DEX built for Elysium: Swap · Pools · Earn · Launchpad. Earn is live now.&#10;&#10;CA: 0x8d99fe0b16ebec93495ad93c824337e46ff9bc84&#10;Trade: https://montramarkets.xyz/token/0x8d99fe0b16ebec93495ad93c824337e46ff9bc84&#10;&#10;Verify the CA — beware of look-alikes.">Copy post</button>
+Verify the mint — beware of look-alikes.</p>
+      <button class="copy-btn" data-copy="$LADDER is coming to Solana.&#10;&#10;Ladder is rebuilding natively on Solana: Swap · Pools · Earn · Launchpad — swaps via Jupiter, liquidity on Raydium &amp; Orca, wallet by Phantom.&#10;&#10;The token launches on pump.fun. The mint address will be published on ladderswap.trade first.&#10;&#10;Verify the mint — beware of look-alikes.">Copy post</button>
     </div>
   </div>
 </section>
@@ -1145,12 +1127,12 @@ Verify the CA — beware of look-alikes.</p>
     <p class="eyebrow rv">Questions</p>
     <h2 class="sec rv">Before you climb</h2>
     <div class="faq-list rv">
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">What is Ladder?<span class="pm">+</span></button><div class="faq-a"><p>Ladder is a decentralized exchange on Elysium. It combines a classic AMM for instant swaps and liquidity pools with a launchpad and ladder-style limit orders — one order spread across several price levels, filling step by step. The rollout is phased: swaps, liquidity and the launchpad first; ladder orders follow in Phase 02.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Where does Ladder launch?<span class="pm">+</span></button><div class="faq-a"><p>On Elysium, Kinetiq's Arbitrum Orbit L2 for the Hyperliquid ecosystem. Ladder is live on Elysium Mainnet (chain ID 99901, gas token HYPE).</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">How do I get HYPE?<span class="pm">+</span></button><div class="faq-a"><p>Transfer or bridge HYPE to Elysium Mainnet (chain ID 99901). HYPE is the gas token on Elysium, so every swap, pool deposit and launch pays gas in HYPE.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">What does providing liquidity earn?<span class="pm">+</span></button><div class="faq-a"><p>Every swap pays a 0.3% fee. That fee stays in the pool and is shared by liquidity providers in proportion to their LP share, so a position grows with trading volume. Liquidity can be withdrawn at any time.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can Ladder use pools from other DEXes on Elysium?<span class="pm">+</span></button><div class="faq-a"><p>Yes — through routing, not by moving liquidity. Ladder Earn's aggregator framework registers other Elysium venues once their routers are public, compares quotes across them, and routes each trade to the deepest pool. Liquidity always stays in its home pool; Ladder is the doorway.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is Ladder audited?<span class="pm">+</span></button><div class="faq-a"><p>No. Ladder's contracts have not been audited. Ladder runs on Elysium Mainnet with real assets — only trade what you can afford to risk, and never treat this as financial advice.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">What is Ladder?<span class="pm">+</span></button><div class="faq-a"><p>Ladder is a decentralized exchange on Solana. It combines a classic AMM for instant swaps and liquidity pools with a launchpad and ladder-style limit orders — one order spread across several price levels, filling step by step. The rollout is phased: swaps, liquidity and the launchpad first; ladder orders follow in Phase 02.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Which chain is Ladder on?<span class="pm">+</span></button><div class="faq-a"><p>Solana. Ladder is built natively on Solana Mainnet — connect with Phantom, pay fees in SOL, swap through Jupiter and provide liquidity on Raydium and Orca.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">How do I get SOL?<span class="pm">+</span></button><div class="faq-a"><p>Buy SOL inside Phantom or transfer it to your Solana wallet from an exchange. SOL pays the fee on every Solana transaction, so every swap, pool deposit and launch needs a little SOL in the wallet.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">What does providing liquidity earn?<span class="pm">+</span></button><div class="faq-a"><p>Every pool sets its own swap fee — standard and concentrated pools on Raydium and Orca each charge their own rate. Fees stay in the pool and are shared by liquidity providers in proportion to their LP share, so a position grows with trading volume. Liquidity can be withdrawn at any time.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can Ladder use pools from other DEXes on Solana?<span class="pm">+</span></button><div class="faq-a"><p>Yes — that is the design. Ladder Earn routes through Jupiter, which compares quotes across Solana venues including Raydium and Orca and sends each trade to the deepest pool. Liquidity always stays in its home pool; Ladder is the doorway.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is Ladder audited?<span class="pm">+</span></button><div class="faq-a"><p>No. Ladder's contracts have not been audited. Ladder runs on Solana Mainnet with real assets — only trade what you can afford to risk, and never treat this as financial advice.</p></div></div>
     </div>
   </div>
 </section>
@@ -1160,10 +1142,10 @@ Verify the CA — beware of look-alikes.</p>
   <div class="wrap">
     <p class="eyebrow center rv">See What the Pools See</p>
     <h2 class="rv">Ready to climb?</h2>
-    <p class="rv">Connect your wallet and take your first step on Elysium Mainnet. Swap at market, seed a pool, or wait for the ladder to come to you.</p>
+    <p class="rv">Connect your wallet and take your first step on Solana. Swap at market, seed a pool, or wait for the ladder to come to you.</p>
     <div class="cta-row rv">
       <span class="btn btn-primary launch-soon" aria-disabled="true" title="Coming soon" style="padding:1rem 1.7rem;font-size:1rem">Launch the App <span class="soon-tag">Soon</span></span>
-      <a class="btn btn-ghost" href="#contracts" style="padding:1rem 1.7rem;font-size:1rem">View Contracts</a>
+      <a class="btn btn-ghost" href="#contracts" style="padding:1rem 1.7rem;font-size:1rem">View Addresses</a>
     </div>
   </div>
 </section>
@@ -1174,7 +1156,7 @@ Verify the CA — beware of look-alikes.</p>
     <div class="foot-grid">
       <div class="foot-brand">
         <a class="brand" href="#top"><span class="mark foot-mark"><img src="assets/ladder-star-dark.png" alt="" /></span><span>ladder</span></a>
-        <p style="margin-top:1rem">The decentralized exchange on Elysium. Swap, provide, launch and climb — rung by rung.</p>
+        <p style="margin-top:1rem">The decentralized exchange on Solana. Swap, provide, launch and climb — rung by rung.</p>
         <p class="mono" style="font-size:.72rem;letter-spacing:.14em"><a href="https://x.com/ladderswap" target="_blank" rel="noopener" style="display:inline;padding:0">@ladderswap on X ↗</a></p>
       </div>
       <div><h4>App</h4>
@@ -1189,15 +1171,15 @@ Verify the CA — beware of look-alikes.</p>
         <a href="#roadmap">Roadmap</a>
         <a href="#faq">FAQ</a>
       </div>
-      <div><h4>Elysium</h4>
-        <a href="#contracts">Bridge · Published at launch</a>
-        <a href="#contracts">Explorer · Published at launch</a>
-        <a href="#contracts">Contracts</a>
+      <div><h4>Solana</h4>
+        <a href="https://explorer.solana.com" target="_blank" rel="noopener">Solana Explorer ↗</a>
+        <a href="https://phantom.app" target="_blank" rel="noopener">Phantom Wallet ↗</a>
+        <a href="#contracts">Addresses</a>
         <a href="https://ladderswap.trade" target="_blank" rel="noopener">ladderswap.trade</a>
       </div>
     </div>
     <div class="foot-legal">
-      <span>Ladder · Elysium Mainnet · 2026</span>
+      <span>Ladder · Solana Mainnet · 2026</span>
       <span>Contracts unaudited · Real assets — trade at your own risk</span>
     </div>
   </div>
@@ -1544,10 +1526,10 @@ Verify the CA — beware of look-alikes.</p>
     }
   }
 
-  /* ---------- Mainnet status: live on Elysium Mainnet (chain 99901) — static status panel, no countdown ---------- */
+  /* ---------- Solana status: Solana Mainnet live; Ladder rebuilding natively on Solana — static status panel, no countdown ---------- */
 
   /* ---------- Swap preview (illustrative rate) ---------- */
-  var RATE=545.24; /* illustrative preview rate only; live quotes come from the pool */
+  var RATE=172.40; /* illustrative SOL preview rate only; live quotes come from Jupiter */
   var sIn=document.getElementById('swapIn'), sOut=document.getElementById('swapOut');
   function quote(){
     var v=parseFloat(sIn.value);
@@ -1563,13 +1545,13 @@ Verify the CA — beware of look-alikes.</p>
   function sim(){
     var a=+amt.value, r=+rng.value, f=+frm.value, t=+to.value;
     if(t<=f){ t=f+2; to.value=t; }
-    document.getElementById('simAmtOut').textContent=a+' HYPE';
+    document.getElementById('simAmtOut').textContent=a+' SOL';
     document.getElementById('simRungsOut').textContent=r;
     document.getElementById('simFromOut').textContent='$'+f;
     document.getElementById('simToOut').textContent='$'+t;
     document.getElementById('simAvg').textContent='$'+(((f+t)/2).toFixed(2));
-    document.getElementById('simPer').textContent=(Math.round(a/r*100)/100)+' HYPE';
-    document.getElementById('simTotal').textContent=a+' HYPE';
+    document.getElementById('simPer').textContent=(Math.round(a/r*100)/100)+' SOL';
+    document.getElementById('simTotal').textContent=a+' SOL';
     rungsEl.innerHTML='';
     for(var i=0;i<r;i++){
       var price=r===1?f:f+(t-f)*(i/(r-1));
