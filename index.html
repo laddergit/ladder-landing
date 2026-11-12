@@ -10,8 +10,8 @@
   wSOL (So11111111111111111111111111111111111111112) and USDC
   (EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v) are the canonical
   Solana mints, shown with copy enabled.
-  Ladder Earn (earn.ladderswap.trade) is a separate app, rebuilt for
-  Solana separately from this landing page.
+  Ladder Earn (earn.ladderswap.trade) is the main app — swap, pools
+  and earn all live inside it (focus narrowed 2026-11-12).
   Boot loader exits on a ~1.4s timer; the hero is only the 4K GLB
   Earth (assets/earth_0_zhtn.glb). App links stay disabled with
   "Soon" labels until the final app ships.
@@ -23,7 +23,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="dark light" />
-<meta name="description" content="Ladder is the decentralized exchange on Solana. Swap at the best route through Jupiter, provide liquidity on Raydium and Orca, launch tokens and climb, rung by rung." />
+<meta name="description" content="Ladder is the decentralized exchange on Solana, built around Ladder Earn — its main app. Swap at the best route through Jupiter, provide liquidity on Raydium and Orca, and earn, rung by rung." />
 <!-- start the 23 MB Earth model downloading immediately, in parallel
      with parsing, so the blue Earth is ready as early as the network
      allows; on repeat visits the service worker (sw.js) serves it
@@ -361,7 +361,7 @@ section{position:relative}
 
 /* ============ SERVICES ============ */
 .services{padding:6rem 0;background:var(--bg)}
-.svc-grid{margin-top:3.2rem;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.25rem;align-items:stretch}
+.svc-grid{margin-top:3.2rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;align-items:stretch}
 .svc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:1.7rem 1.6rem;text-decoration:none;display:flex;flex-direction:column;gap:.6rem;box-shadow:var(--shadow-rest);transition:border-color .25s,transform .25s var(--ease),box-shadow .25s;height:100%;min-height:100%}
 .svc:hover{border-color:var(--brand-line);transform:translateY(-3px);box-shadow:var(--shadow-raised)}
 .svc .ic{width:46px;height:46px;flex:none;border-radius:12px;background:radial-gradient(circle at 50% 30%,rgba(140,140,140,.22),rgba(10,10,10,.92) 78%);border:1px solid var(--brand-line);display:grid;place-items:center;color:var(--brand-bright)}
@@ -787,7 +787,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="stage-in">
         <p class="kicker">The DEX on Solana</p>
         <h1>Swap. Provide.<br />Stay <span class="mark">Ahead<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span>.</h1>
-        <p class="sub">One decentralized exchange on Solana — swap at the best route, earn from the pools, launch a token, and let ladder orders climb to your price. Fees in SOL, keys in your hands.</p>
+        <p class="sub">One decentralized exchange on Solana, built around one main app — Ladder Earn. Swap at the best route, earn from the pools, and let ladder orders climb to your price. Fees in SOL, keys in your hands.</p>
         <div class="cta-row">
           <span class="btn btn-light launch-soon" aria-disabled="true" title="Coming soon">Launch the App <span class="soon-tag">Soon</span></span>
           <a class="btn btn-outline" href="#services">Explore the Ecosystem</a>
@@ -813,8 +813,8 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <section class="stage split" data-stage="2">
       <div class="stage-in">
         <p class="kicker">Ladder in the Climb</p>
-        <h2>Six rungs up — Ladder meets you at <span class="mark">each one<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span></h2>
-        <p class="sub">Trading has a predictable path: connect, fund, swap, provide, launch, climb. Most traders stall on one rung because each step lives in a different app. Ladder puts every rung in one place.</p>
+        <h2>Five rungs up — Ladder meets you at <span class="mark">each one<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span></h2>
+        <p class="sub">Trading has a predictable path: connect, fund, swap, provide, climb. Most traders stall on one rung because each step lives in a different app. Ladder Earn puts every rung in one place.</p>
         <div class="cta-row"><a class="btn btn-outline" href="#climb">Walk the Rungs ↓</a></div>
       </div>
     </section>
@@ -824,9 +824,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="stage-in">
         <p class="kicker">One Ecosystem, Not Separate Apps</p>
         <h2>Every layer of trading, pulled into <span class="mark">one core<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span>.</h2>
-        <p class="sub">Swap, pools, launchpad and earn — one connected lifecycle on one chain, through one interface. Not separate tools that never talk to each other.</p>
+        <p class="sub">Swap, pools and earn — one connected lifecycle on one chain, inside one app: Ladder Earn. Not separate tools that never talk to each other.</p>
         <div class="stage-chips">
-          <span><b>01</b>&nbsp; Swap</span><span><b>02</b>&nbsp; Pools</span><span><b>03</b>&nbsp; Launchpad</span><span><b>04</b>&nbsp; Earn</span>
+          <span><b>01</b>&nbsp; Swap</span><span><b>02</b>&nbsp; Pools</span><span><b>03</b>&nbsp; Earn</span>
         </div>
       </div>
     </section>
@@ -834,9 +834,9 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
     <!-- Stage 4 -->
     <section class="stage" data-stage="4">
       <div class="stage-in">
-        <p class="kicker">Swap · Pools · Earn · Launchpad</p>
+        <p class="kicker">Swap · Pools · Earn</p>
         <h2>The Ladder <span class="mark">Ecosystem<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span></h2>
-        <p class="sub">Step into any one of them — they all feed the same core. A token launched on Ladder graduates into a Ladder pool, trades on Ladder Swap, and earns in Ladder Earn.</p>
+        <p class="sub">Step into any one of them — they all live inside Ladder Earn and feed the same core. Swap a token, pool it on Raydium or Orca, and watch the position earn.</p>
         <div class="cta-row"><a class="btn btn-outline" href="#services">See All Services ↓</a></div>
       </div>
     </section>
@@ -846,7 +846,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="stage-in">
         <p class="kicker">The Comparison</p>
         <h2>Full coverage. <span class="mark">One home<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2,8 Q150,1 298,7"/></svg></span> for liquidity.</h2>
-        <p class="sub">Fragmented tools mean fragmented liquidity. Ladder keeps the whole flow — from first swap to launched token — under one roof, on Solana.</p>
+        <p class="sub">Fragmented tools mean fragmented liquidity. Ladder Earn keeps the whole flow — from first swap to a position that earns — under one roof, on Solana.</p>
         <div class="cta-row"><a class="btn btn-outline" href="#compare">Compare ↓</a></div>
       </div>
     </section>
@@ -872,7 +872,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 <section class="climb" id="climb">
   <div class="wrap">
     <p class="eyebrow rv">Ladder in the Climb</p>
-    <h2 class="sec rv">Six rungs of a trade —<br /><span class="thin">Ladder holds each one</span></h2>
+    <h2 class="sec rv">Five rungs of a trade —<br /><span class="thin">Ladder holds each one</span></h2>
     <p class="lede rv">Every trader climbs the same staircase. Here is where each Ladder service cuts in, from the first wallet connection to a position that keeps earning.</p>
 
     <div class="climb-list rv">
@@ -880,8 +880,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="climb-row"><span class="num">2</span><h3>Fund</h3><p>Fund your wallet with SOL — buy it in Phantom or transfer it in. Every transaction on Solana pays its fee in SOL, a fraction of a cent at a time.</p><span class="tag live">Live</span></div>
       <div class="climb-row"><span class="num">3</span><h3>Swap</h3><p>Trade any pair at the best route Jupiter finds across Solana's pools — slippage set by you, one signature.</p><span class="tag live">Live</span></div>
       <div class="climb-row"><span class="num">4</span><h3>Provide</h3><p>Deposit a pair into a Raydium or Orca pool from Earn, and earn your share of the fees on every routed swap. Withdraw anytime.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">5</span><h3>Launch</h3><p>Launch a token on a bonding curve through pump.fun. When the curve completes, liquidity graduates straight into a live pool.</p><span class="tag live">Live</span></div>
-      <div class="climb-row"><span class="num">6</span><h3>Climb</h3><p>Put LP positions to work in Ladder Earn, and place ladder orders that split one trade across a staircase of prices, filling rung by rung.</p><span class="tag soon">Earn on Solana · Orders Phase 02</span></div>
+      <div class="climb-row"><span class="num">5</span><h3>Climb</h3><p>Put LP positions to work in Ladder Earn, and place ladder orders that split one trade across a staircase of prices, filling rung by rung.</p><span class="tag soon">Earn on Solana · Orders Phase 02</span></div>
     </div>
   </div>
 </section>
@@ -891,12 +890,12 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   <div class="wrap">
     <p class="eyebrow rv">One Ecosystem, One Core</p>
     <h2 class="sec rv">Every layer of trading,<br />pulled into one core.</h2>
-    <p class="lede rv">Swap, provide liquidity, launch, earn — one integrated lifecycle on Solana. Each service feeds the same pools, so liquidity deepens instead of scattering.</p>
+    <p class="lede rv">Swap, provide liquidity, earn — one integrated lifecycle on Solana, all inside Ladder Earn. Each part feeds the same pools, so liquidity deepens instead of scattering.</p>
 
     <div class="core-diagram rv">
       <div class="core-col">
         <div class="core-node"><b>Swap</b><span>Instant AMM trades, quoted from reserves</span></div>
-        <div class="core-node"><b>Launchpad</b><span>Bonding-curve tokens that graduate to pools</span></div>
+        <div class="core-node"><b>Aggregator</b><span>Jupiter routing across Solana's deepest pools</span></div>
       </div>
       <div class="core-hub"><div><span>Ladder Core</span><b>Solana<br />Liquidity</b></div></div>
       <div class="core-col">
@@ -910,30 +909,25 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
 <!-- ================= SERVICES ================= -->
 <section class="services" id="services">
   <div class="wrap">
-    <p class="eyebrow center rv">Swap · Pools · Earn · Launchpad</p>
-    <h2 class="sec rv" style="text-align:center">The Ladder Ecosystem</h2>
-    <p class="lede center rv">Swap, provide liquidity, earn and launch tokens — they all feed the same core.</p>
+    <p class="eyebrow center rv">Swap · Pools · Earn</p>
+    <h2 class="sec rv" style="text-align:center">One App — Ladder Earn</h2>
+    <p class="lede center rv">Ladder Earn is the main app. Swap and pools live inside it — everything feeds the same core.</p>
 
     <div class="svc-grid">
-      <span class="svc rv svc-off" aria-disabled="true" title="Coming soon">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4"/><path d="M3 8h14"/><path d="M17 20l4-4-4-4"/><path d="M21 16H7"/></svg></span>
-        <h3>Swap</h3><p>Trade any token pair on Solana at the best available route. Quotes powered by Jupiter, your own slippage setting, SOL / wSOL routing built in.</p>
-        <span class="go">Open Swap <span class="st soon">Soon</span></span>
-      </span>
-      <span class="svc rv svc-off" style="--d:.06s" aria-disabled="true" title="Coming soon">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg></span>
-        <h3>Pools &amp; Liquidity</h3><p>Every pool in one list — reserves, fee estimates and your LP positions. Create a pool, add a pair, withdraw whenever you like.</p>
-        <span class="go">Browse Pools <span class="st soon">Soon</span></span>
-      </span>
-      <span class="svc rv svc-off" style="--d:.12s" aria-disabled="true" title="Coming soon">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L20 4"/><path d="M14 4h6v6"/><path d="M4 14v6h6"/></svg></span>
-        <h3>Launchpad</h3><p>Launch a token on a bonding curve via pump.fun. Graduations seed liquidity directly into a live Raydium pool — the built-in source of new markets.</p>
-        <span class="go">Open Launchpad <span class="st soon">Soon</span></span>
-      </span>
-      <a class="svc rv" style="--d:.18s" href="https://earn.ladderswap.trade" target="_blank" rel="noopener">
+      <a class="svc rv" href="https://earn.ladderswap.trade" target="_blank" rel="noopener">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>
-        <h3>Earn</h3><p>Markets, portfolio and an aggregator that routes across Solana's deepest pools — swaps through Jupiter, liquidity on Raydium and Orca, quotes compared live.</p>
+        <h3>Ladder Earn</h3><p>The main Ladder app. Markets, portfolio and an aggregator that routes across Solana's deepest pools — swaps through Jupiter, liquidity on Raydium and Orca, quotes compared live.</p>
         <span class="go">Open Earn <span class="st">Live · Solana</span></span>
+      </a>
+      <a class="svc rv" style="--d:.06s" href="https://earn.ladderswap.trade" target="_blank" rel="noopener">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4"/><path d="M3 8h14"/><path d="M17 20l4-4-4-4"/><path d="M21 16H7"/></svg></span>
+        <h3>Swap</h3><p>Inside Ladder Earn: trade any token pair on Solana at the best available route. Quotes powered by Jupiter, your own slippage setting, SOL / wSOL routing built in.</p>
+        <span class="go">Swap in Earn <span class="st">Live · Solana</span></span>
+      </a>
+      <a class="svc rv" style="--d:.12s" href="https://earn.ladderswap.trade" target="_blank" rel="noopener">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg></span>
+        <h3>Pools &amp; Liquidity</h3><p>Inside Ladder Earn: every pool in one list — reserves, fee estimates and your LP positions on Raydium and Orca. Add a pair, withdraw whenever you like.</p>
+        <span class="go">Browse Pools in Earn <span class="st">Live · Solana</span></span>
       </a>
     </div>
   </div>
@@ -950,11 +944,10 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <table class="cmp">
         <thead><tr><th>Dimension</th><th class="hl">Ladder</th><th>Separate DEX Tools</th><th>Build It Yourself</th></tr></thead>
         <tbody>
-          <tr><td>Coverage</td><td class="hl" data-h="Ladder">Swap, pools, earn &amp; launchpad</td><td data-h="Separate tools">One tool each</td><td data-h="Build it">Build each piece</td></tr>
+          <tr><td>Coverage</td><td class="hl" data-h="Ladder">Swap, pools &amp; earn — one app</td><td data-h="Separate tools">One tool each</td><td data-h="Build it">Build each piece</td></tr>
           <tr><td>Entry cost</td><td class="hl" data-h="Ladder">Fees in SOL only</td><td data-h="Separate tools">Fees &amp; accounts per tool</td><td data-h="Build it">Months of engineering</td></tr>
           <tr><td>Time to first trade</td><td class="hl" data-h="Ladder">Minutes — connect &amp; swap</td><td data-h="Separate tools">Days of setup</td><td data-h="Build it">Months</td></tr>
           <tr><td>Single interface</td><td class="hl yes" data-h="Ladder">✓ One app</td><td class="no" data-h="Separate tools">✕</td><td class="mid" data-h="Build it">Eventually</td></tr>
-          <tr><td>Launches graduate into pools</td><td class="hl yes" data-h="Ladder">✓ By design</td><td class="no" data-h="Separate tools">✕</td><td class="no" data-h="Build it">✕</td></tr>
           <tr><td>Self-custody throughout</td><td class="hl yes" data-h="Ladder">✓ You sign everything</td><td class="mid" data-h="Separate tools">Varies</td><td class="yes" data-h="Build it">✓</td></tr>
           <tr><td>Native to Solana &amp; SOL</td><td class="hl yes" data-h="Ladder">✓ Built for it</td><td class="no" data-h="Separate tools">✕</td><td class="no" data-h="Build it">✕</td></tr>
         </tbody>
@@ -968,7 +961,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
   <div class="wrap">
     <p class="eyebrow rv">Solana Mainnet · Live</p>
     <h2 class="sec rv">Mainnet Is Live</h2>
-    <p class="lede rv">Ladder is rebuilding natively on Solana — same four products, same pool-first model, real assets. Swap, provide liquidity, launch and earn, all settled on Solana with fees in SOL.</p>
+    <p class="lede rv">Ladder is rebuilding natively on Solana — one app, Ladder Earn, same pool-first model, real assets. Swap, provide liquidity and earn, all settled on Solana with fees in SOL.</p>
 
     <div class="clock-grid rv">
       <div class="clock-cell"><b>Live</b><span>Solana Mainnet · Network status</span></div>
@@ -1045,7 +1038,7 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       <div class="step"><span class="n">02</span><h3>Get SOL</h3><p>Fund your wallet with SOL — it pays the fee for everything that follows, a fraction of a cent per transaction.</p></div>
       <div class="step"><span class="n">03</span><h3>Make your first swap</h3><p>Pick a pair, check the pool quote, set slippage, sign once. Done.</p></div>
       <div class="step"><span class="n">04</span><h3>Seed a pool</h3><p>Deposit a pair into a Raydium or Orca pool and start earning your share of the swap fees.</p></div>
-      <div class="step"><span class="n">05</span><h3>Launch or climb</h3><p>Launch a token, or put your LP positions to work in Earn.</p></div>
+      <div class="step"><span class="n">05</span><h3>Climb</h3><p>Put your LP positions to work in Earn — every position keeps earning from the swaps routed through it.</p></div>
     </div>
   </div>
 </section>
@@ -1111,12 +1104,12 @@ footer{background:var(--bg);border-top:1px solid var(--line);color:var(--muted);
       </div>
       <p class="x-post-text">$LADDER is coming to Solana.
 
-Ladder is rebuilding natively on Solana: Swap · Pools · Earn · Launchpad — swaps via Jupiter, liquidity on Raydium &amp; Orca, wallet by Phantom.
+Ladder is rebuilding natively on Solana around one main app — Ladder Earn: Swap · Pools · Earn — swaps via Jupiter, liquidity on Raydium &amp; Orca, wallet by Phantom.
 
 The token launches on pump.fun. The mint address will be published on ladderswap.trade first.
 
 Verify the mint — beware of look-alikes.</p>
-      <button class="copy-btn" data-copy="$LADDER is coming to Solana.&#10;&#10;Ladder is rebuilding natively on Solana: Swap · Pools · Earn · Launchpad — swaps via Jupiter, liquidity on Raydium &amp; Orca, wallet by Phantom.&#10;&#10;The token launches on pump.fun. The mint address will be published on ladderswap.trade first.&#10;&#10;Verify the mint — beware of look-alikes.">Copy post</button>
+      <button class="copy-btn" data-copy="$LADDER is coming to Solana.&#10;&#10;Ladder is rebuilding natively on Solana around one main app — Ladder Earn: Swap · Pools · Earn — swaps via Jupiter, liquidity on Raydium &amp; Orca, wallet by Phantom.&#10;&#10;The token launches on pump.fun. The mint address will be published on ladderswap.trade first.&#10;&#10;Verify the mint — beware of look-alikes.">Copy post</button>
     </div>
   </div>
 </section>
@@ -1127,9 +1120,9 @@ Verify the mint — beware of look-alikes.</p>
     <p class="eyebrow rv">Questions</p>
     <h2 class="sec rv">Before you climb</h2>
     <div class="faq-list rv">
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">What is Ladder?<span class="pm">+</span></button><div class="faq-a"><p>Ladder is a decentralized exchange on Solana. It combines a classic AMM for instant swaps and liquidity pools with a launchpad and ladder-style limit orders — one order spread across several price levels, filling step by step. The rollout is phased: swaps, liquidity and the launchpad first; ladder orders follow in Phase 02.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">What is Ladder?<span class="pm">+</span></button><div class="faq-a"><p>Ladder is a decentralized exchange on Solana, centred on Ladder Earn — its main app. Earn combines a classic AMM for instant swaps and liquidity pools with ladder-style limit orders — one order spread across several price levels, filling step by step. The rollout is phased: swaps and liquidity in Earn first; ladder orders follow in Phase 02.</p></div></div>
       <div class="faq-item"><button class="faq-q" aria-expanded="false">Which chain is Ladder on?<span class="pm">+</span></button><div class="faq-a"><p>Solana. Ladder is built natively on Solana Mainnet — connect with Phantom, pay fees in SOL, swap through Jupiter and provide liquidity on Raydium and Orca.</p></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">How do I get SOL?<span class="pm">+</span></button><div class="faq-a"><p>Buy SOL inside Phantom or transfer it to your Solana wallet from an exchange. SOL pays the fee on every Solana transaction, so every swap, pool deposit and launch needs a little SOL in the wallet.</p></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">How do I get SOL?<span class="pm">+</span></button><div class="faq-a"><p>Buy SOL inside Phantom or transfer it to your Solana wallet from an exchange. SOL pays the fee on every Solana transaction, so every swap and pool deposit needs a little SOL in the wallet.</p></div></div>
       <div class="faq-item"><button class="faq-q" aria-expanded="false">What does providing liquidity earn?<span class="pm">+</span></button><div class="faq-a"><p>Every pool sets its own swap fee — standard and concentrated pools on Raydium and Orca each charge their own rate. Fees stay in the pool and are shared by liquidity providers in proportion to their LP share, so a position grows with trading volume. Liquidity can be withdrawn at any time.</p></div></div>
       <div class="faq-item"><button class="faq-q" aria-expanded="false">Can Ladder use pools from other DEXes on Solana?<span class="pm">+</span></button><div class="faq-a"><p>Yes — that is the design. Ladder Earn routes through Jupiter, which compares quotes across Solana venues including Raydium and Orca and sends each trade to the deepest pool. Liquidity always stays in its home pool; Ladder is the doorway.</p></div></div>
       <div class="faq-item"><button class="faq-q" aria-expanded="false">Is Ladder audited?<span class="pm">+</span></button><div class="faq-a"><p>No. Ladder's contracts have not been audited. Ladder runs on Solana Mainnet with real assets — only trade what you can afford to risk, and never treat this as financial advice.</p></div></div>
@@ -1156,13 +1149,12 @@ Verify the mint — beware of look-alikes.</p>
     <div class="foot-grid">
       <div class="foot-brand">
         <a class="brand" href="#top"><span class="mark foot-mark"><img src="assets/ladder-star-dark.png" alt="" /></span><span>ladder</span></a>
-        <p style="margin-top:1rem">The decentralized exchange on Solana. Swap, provide, launch and climb — rung by rung.</p>
+        <p style="margin-top:1rem">The decentralized exchange on Solana. Swap, provide, earn and climb — rung by rung.</p>
         <p class="mono" style="font-size:.72rem;letter-spacing:.14em"><a href="https://x.com/ladderswap" target="_blank" rel="noopener" style="display:inline;padding:0">@ladderswap on X ↗</a></p>
       </div>
       <div><h4>App</h4>
-        <span class="foot-off" aria-disabled="true" title="Coming soon">Swap &amp; Pools <span class="soon-tag">Soon</span></span>
-        <span class="foot-off" aria-disabled="true" title="Coming soon">Launchpad <span class="soon-tag">Soon</span></span>
         <a href="https://earn.ladderswap.trade" target="_blank" rel="noopener">Ladder Earn</a>
+        <span class="foot-off" aria-disabled="true" title="Coming soon">Swap &amp; Pools <span class="soon-tag">Soon</span></span>
       </div>
       <div><h4>Explore</h4>
         <a href="#services">Ecosystem</a>
